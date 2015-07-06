@@ -1,4 +1,4 @@
-<tool id="goenrichment" name="GOEnrichment" version="1.2.1">
+<tool id="goenrichment" name="GOEnrichment" version="1.2.2">
 	<description>performs GO enrichment analysis of a set of gene products</description>
 	<command interpreter="java -jar">GOEnrichment.jar 
 --go $go
@@ -66,7 +66,7 @@ GOEnrichment is a Java application that can be used to analyze gene product sets
 GOEnrichment requires:
 
 - -A Gene Ontology file in either OBO or OWL format (see http://geneontology.org/page/download-ontology).
-- -A tabular annotation file in GAF (http://geneontology.org/page/download-annotations) format, BLAST2GO format, or a simple two-column table (e.g. from BioMart) with gene product ids in the first column and GO terms in the second one. This file can be GZipped.
+- -A tabular annotation file in GAF (http://geneontology.org/page/download-annotations) format, BLAST2GO format, or a simple two-column table (e.g. from BioMart) with gene product ids in the first column and GO terms in the second one.
 - -A list of gene products comprising the study set (a flat text file with one gene product per line).
 - -Optionally, a list of gene products comprising the population set (if none is submitted, the population set will be the set of gene products listed in the annotation file).
 

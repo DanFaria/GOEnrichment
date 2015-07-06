@@ -225,11 +225,7 @@ public class AnnotationSet
 	private void readAnnotationFile(String annotFile) throws IOException
 	{
 		//Open the input file or die
-		BufferedReader in;
-		if(annotFile.endsWith(".gz"))
-			in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(annotFile))));
-		else
-			in = new BufferedReader(new FileReader(annotFile));
+		BufferedReader in = new BufferedReader(new FileReader(annotFile));
 		String line = in.readLine();
 		//Get the ontology
 		GeneOntology o = ea.getOntology();
