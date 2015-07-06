@@ -1,4 +1,4 @@
-<tool id="goenrichment" name="GOEnrichment" version="1.2.0">
+<tool id="goenrichment" name="GOEnrichment" version="1.2.1">
 	<description>performs GO enrichment analysis of a set of gene products</description>
 	<command interpreter="java -jar">GOEnrichment.jar 
 --go $go
