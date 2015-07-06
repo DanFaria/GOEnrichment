@@ -8,14 +8,11 @@
 package ontology;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 
 import main.GOEnrichment;
 import util.Table2Set;
