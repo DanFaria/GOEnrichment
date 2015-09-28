@@ -67,9 +67,6 @@ public class FisherExactTest
 				//Then we remove them
 				for(int r : single)
 					testByType[i].removeTerm(r);
-				//The root, while not single is irrelevant (it will necessarily
-				//(have p-value = 1, so there is no point in testing it)
-				testByType[i].removeTerm(o.getRoot(i));
 			}
 		}
 		//Get the population set
@@ -111,6 +108,10 @@ public class FisherExactTest
 		//Remove redundant terms from the TestResults
 		for(int i = 0; i < 3; i++)
 		{
+			//The root, while not necessarily redundant, is irrelevant
+			//(it will necessarily have p-value = 1, so there is no point
+			//in testing it)
+			testByType[i].removeTerm(o.getRoot(i));
 			//First we identify them
 			HashSet<Integer> redundant = new HashSet<Integer>();
 			for(int go : testByType[i].getTerms())
