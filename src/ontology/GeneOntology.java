@@ -70,6 +70,9 @@ public class GeneOntology
 	private HashMap<Integer,Integer> termTypes;
 	//The array of term indexes of the GOType roots
 	private int[] rootIndexes;
+	
+	private HashSet<String> deprecated;
+	private HashMap<String,String> alternatives;
 
 //Constructors
 
@@ -93,6 +96,8 @@ public class GeneOntology
 		ancestorMap = new Table3List<Integer,Integer,Relationship>();
 		termTypes = new HashMap<Integer,Integer>();
 		rootIndexes = new int[3];
+		deprecated = new HashSet<String>();
+		alternatives = new HashMap<String,String>();
         //Increase the entity expansion limit to allow large ontologies
         System.setProperty(LIMIT, "1000000");
         //Get an Ontology Manager
@@ -170,7 +175,7 @@ public class GeneOntology
 	 */
 	public boolean containsName(String name)
 	{
-		return nameClasses.containsKey(name);
+		return nameClasses.containsKey(name) || alternatives.containsKey(name);
 	}
 	
 	/**
@@ -441,7 +446,12 @@ public class GeneOntology
 	 */
 	public int getIndexName(String name)
 	{
-		return nameClasses.get(name);
+		if(nameClasses.containsKey(name))
+			return nameClasses.get(name);
+		if(alternatives.containsKey(name) &&
+				nameClasses.containsKey(alternatives.get(name)))
+			return nameClasses.get(alternatives.get(name));
+		return -1;
 	}
 	
 	/**
@@ -659,6 +669,23 @@ public class GeneOntology
 			String classUri = c.getIRI().toString();
 			if(classUri == null || classUri.endsWith("owl#Thing") || classUri.endsWith("owl:Thing"))
 				continue;
+			//Check if the class is deprecated
+			boolean dep = false;
+			for(OWLAnnotation a : c.getAnnotations(o))
+			{
+				if(a.getProperty().toString().equals("owl:deprecated")  && ((OWLLiteral)a.getValue()).parseBoolean())
+				{
+					dep = true;
+					break;
+				}
+			}
+			//If it is, record it and skip it
+			if(dep)
+			{
+				deprecated.add(getLocalName(classUri).replace('_', ':'));
+				continue;
+			}
+			
 			classUris.put(++index,classUri);
 			uriClasses.put(classUri, index);
 			
@@ -686,14 +713,21 @@ public class GeneOntology
             			rootIndexes[typeIndex] = index;
 	            }
             	//Type
-            	if(annotation.getProperty().toString().contains("hasOBONamespace") && annotation.getValue() instanceof OWLLiteral)
+            	else if(annotation.getProperty().toString().contains("hasOBONamespace") && annotation.getValue() instanceof OWLLiteral)
             	{
             		OWLLiteral val = (OWLLiteral) annotation.getValue();
             		String type = val.getLiteral();
             		int typeIndex = GOType.index(type);
             		if(typeIndex > -1)
             			termTypes.put(index, typeIndex);
-	            }            	
+	            }
+            	//Alternative
+            	if(annotation.getProperty().toString().contains("hasAlternativeId") && annotation.getValue() instanceof OWLLiteral)
+            	{
+            		OWLLiteral val = (OWLLiteral) annotation.getValue();
+            		String alt = val.getLiteral();
+            		alternatives.put(alt, name);
+	            }
 	        }
 		}
 	}
