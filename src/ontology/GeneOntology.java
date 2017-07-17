@@ -463,6 +463,13 @@ public class GeneOntology
 		return uriClasses.get(uri);
 	}	
 	
+
+	public double getInfoContent(int i) {
+		return 1-Math.log(1+getSubClasses(i,false).size())/
+				Math.log(1+getSubClasses(rootIndexes[getTypeIndex(i)],false).size());
+	}
+	
+	
 	/**
 	 * @param index: the index of the class to get the label
 	 * @return the label of the class with the given index
@@ -947,5 +954,5 @@ public class GeneOntology
 				}
 			}
 		}
-	}
+	}	
 }
