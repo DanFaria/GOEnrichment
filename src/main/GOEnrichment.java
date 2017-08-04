@@ -114,6 +114,13 @@ public class GOEnrichment
 	{
 		return results;
 	}
+	
+	public double getScore(int term)
+	{
+		int i = go.getTypeIndex(term);
+		return go.getInfoContent(term)*results[i].getStudyCount(term)/results[i].getStudyTotal()*
+				Math.ceil(-Math.log10(results[i].getCorrectedPValue(term))); 
+	}
 
 	public HashSet<String> getStudySet()
 	{
@@ -269,7 +276,7 @@ public class GOEnrichment
 				out.print("q-value\t");
 			else
 				out.print("corrected p-value\t");
-			out.println("name\tgene products");
+			out.println("info content\tname\tgene products");
 			//Then write the term information (in ascending p-value order)
 			for(int term : results[index].getTerms())
 			{
@@ -279,6 +286,7 @@ public class GOEnrichment
 				out.print(NumberFormatter.formatPercent(results[index].getPopulationCount(term)*1.0/results[index].getPopulationTotal()) + "\t");
 				out.print(NumberFormatter.formatPValue(results[index].getPValue(term)) + "\t");
 				out.print(NumberFormatter.formatPValue(results[index].getCorrectedPValue(term)) + "\t");
+				out.print(NumberFormatter.formatPercent(go.getInfoContent(term)) + "\t");
 				out.print(go.getLabel(term) + "\t");
 				String genes = "";
 				for(String gene : results[index].getStudyAnnotations(term))
