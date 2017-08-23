@@ -80,8 +80,10 @@ public class GOEnrichment
 	
 	public void filter() 
 	{
+		System.out.println(df.format(new Date()) + " - Running family filterer");
 		FamilyFilterer fam = new FamilyFilterer();
 		fam.filterer();
+		System.out.println(df.format(new Date()) + " - Finished");
 	}
 	
 	public static GOEnrichment getInstance()
@@ -128,13 +130,6 @@ public class GOEnrichment
 	{
 		return filteredResults;
 	}
-	
-//	public double getScore(int term)
-//	{
-//		int i = go.getTypeIndex(term);
-//		return go.getInfoContent(term)*results[i].getStudyCount(term)/results[i].getStudyTotal()*
-//				Math.ceil(-Math.log10(results[i].getCorrectedPValue(term))); 
-//	}
 
 	public HashSet<String> getStudySet()
 	{
