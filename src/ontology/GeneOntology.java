@@ -463,10 +463,13 @@ public class GeneOntology
 		return uriClasses.get(uri);
 	}	
 	
-
-	public double getInfoContent(int i) {
-		return 1-Math.log(1+getSubClasses(i,false).size())/
-				Math.log(1+getSubClasses(rootIndexes[getTypeIndex(i)],false).size());
+	/**
+	 * @param term: the integer representing a term, from the Ontology
+	 * @return the information content of the given term
+	 */
+	public double getInfoContent(int term) {
+		return 1-Math.log(1+getSubClasses(term,false).size())/
+				Math.log(1+getSubClasses(rootIndexes[getTypeIndex(term)],false).size());
 	}
 	
 	
@@ -553,7 +556,7 @@ public class GeneOntology
 	{
 		return rootIndexes[index];
 	}
-	
+		
 	/**
 	 * @param classId: the id of the class to search in the map
 	 * @param direct: whether to return just the direct subclasses or all subclasses
