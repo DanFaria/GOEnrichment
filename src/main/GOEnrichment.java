@@ -24,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import ontology.AnnotationSet;
 import ontology.GeneOntology;
+import output.FamilyFilterer;
 import statistics.CorrectionOption;
 import statistics.FisherExactTest;
 import statistics.MultipleTestCorrection;
@@ -52,6 +53,8 @@ public class GOEnrichment
 	private HashSet<String> populationSet = null;
 	//- The array of statistical test results
 	private TestResult[] results;
+	//- The array of statistical filtered test results
+	private TestResult[] filteredResults;
 	
 	//Options:
 	private CorrectionOption c;
@@ -73,6 +76,12 @@ public class GOEnrichment
 			catch (IOException f){ /*Do nothing*/ }
 		}
 		System.exit(0);
+	}
+	
+	public void filter() 
+	{
+		FamilyFilterer fam = new FamilyFilterer();
+		fam.filterer();
 	}
 	
 	public static GOEnrichment getInstance()
@@ -115,12 +124,17 @@ public class GOEnrichment
 		return results;
 	}
 	
-	public double getScore(int term)
+	public TestResult[] getFilteredResults()
 	{
-		int i = go.getTypeIndex(term);
-		return go.getInfoContent(term)*results[i].getStudyCount(term)/results[i].getStudyTotal()*
-				Math.ceil(-Math.log10(results[i].getCorrectedPValue(term))); 
+		return filteredResults;
 	}
+	
+//	public double getScore(int term)
+//	{
+//		int i = go.getTypeIndex(term);
+//		return go.getInfoContent(term)*results[i].getStudyCount(term)/results[i].getStudyTotal()*
+//				Math.ceil(-Math.log10(results[i].getCorrectedPValue(term))); 
+//	}
 
 	public HashSet<String> getStudySet()
 	{
@@ -276,7 +290,7 @@ public class GOEnrichment
 				out.print("q-value\t");
 			else
 				out.print("corrected p-value\t");
-			out.println("info content\tname\tgene products");
+			out.println("score\tname\tgene products");
 			//Then write the term information (in ascending p-value order)
 			for(int term : results[index].getTerms())
 			{
@@ -286,10 +300,53 @@ public class GOEnrichment
 				out.print(NumberFormatter.formatPercent(results[index].getPopulationCount(term)*1.0/results[index].getPopulationTotal()) + "\t");
 				out.print(NumberFormatter.formatPValue(results[index].getPValue(term)) + "\t");
 				out.print(NumberFormatter.formatPValue(results[index].getCorrectedPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPercent(go.getInfoContent(term)) + "\t");
+				out.print(NumberFormatter.formatPValue(results[index].getScore(term)) + "\t");
 				out.print(go.getLabel(term) + "\t");
 				String genes = "";
 				for(String gene : results[index].getStudyAnnotations(term))
+					genes += gene + ",";
+				out.println(genes.substring(0, genes.length()-1));
+			}
+			out.close();
+			System.out.println(df.format(new Date()) + " - Finished");
+		}
+		catch(IOException e)
+		{
+			System.err.println("Error: could not write result file '" + file + "'!");
+			e.printStackTrace();
+			try{ log.close(); }
+			catch (IOException f){ /*Do nothing*/ }
+			System.exit(1);			
+		}
+	}
+	
+	public void saveFilteredResult(int index, String file)
+	{
+		try
+		{
+			System.out.println(df.format(new Date()) + " - Saving filtered result file '" + file + "'");
+			PrintWriter out = new PrintWriter(new FileWriter(file));
+			//First write the header
+			out.print("GO Term\tStudy #\tStudy Freq.\tPop. Freq.\tp-value\t");
+			if(c.equals(CorrectionOption.BENJAMINI_HOCHBERG))
+				out.print("q-value\t");
+			else
+				out.print("corrected p-value\t");
+			out.println("score\tname\tgene products");
+			//Then write the term information (in ascending p-value order)
+			for(int term : filteredResults[index].getTerms())
+			{
+				out.print(go.getLocalName(term) + "\t");
+				out.print(filteredResults[index].getStudyCount(term) + "\t");
+				out.print(NumberFormatter.formatPercent(filteredResults[index].getStudyCount(term)*1.0/filteredResults[index].getStudyTotal()) + "\t");
+				out.print(NumberFormatter.formatPercent(filteredResults[index].getPopulationCount(term)*1.0/filteredResults[index].getPopulationTotal()) + "\t");
+				out.print(NumberFormatter.formatPValue(filteredResults[index].getPValue(term)) + "\t");
+				out.print(NumberFormatter.formatPValue(filteredResults[index].getCorrectedPValue(term)) + "\t");
+				out.print(NumberFormatter.formatPValue(filteredResults[index].getCorrectedPValue(term)) + "\t");
+				out.print(NumberFormatter.formatPValue(results[index].getScore(term)) + "\t");
+				out.print(go.getLabel(term) + "\t");
+				String genes = "";
+				for(String gene : filteredResults[index].getStudyAnnotations(term))
 					genes += gene + ",";
 				out.println(genes.substring(0, genes.length()-1));
 			}
@@ -324,6 +381,11 @@ public class GOEnrichment
 	public void setResults(TestResult[] results)
 	{
 		this.results = results;
+	}
+	
+	public void setFilteredResults(TestResult[] results)
+	{
+		this.filteredResults = results;
 	}
 	
 	public void setUseAllRelations(boolean b)
