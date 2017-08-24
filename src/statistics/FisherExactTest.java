@@ -105,43 +105,6 @@ public class FisherExactTest
 				}
 			}
 		}
-		//Remove redundant terms from the TestResults
-		for(int i = 0; i < 3; i++)
-		{
-			//The root, while not necessarily redundant, is irrelevant
-			//(it will necessarily have p-value = 1, so there is no point
-			//in testing it)
-			testByType[i].removeTerm(o.getRoot(i));
-			//First we identify them
-			HashSet<Integer> redundant = new HashSet<Integer>();
-			for(int go : testByType[i].getTerms())
-			{
-				//A term is redundant if its study count...
-				int count = testByType[i].getStudyCount(go);
-				Set<Integer> descendants;
-				if(ea.useAllRelations())
-					descendants = o.getChildren(go);
-				else
-					descendants = o.getSubClasses(go, true);
-				for(int desc : descendants)
-				{
-					//Is equal to the study count of any one of its descendants
-					//(in which case all its annotations are inferred from
-					//that descendant)
-					if(testByType[i].getStudyCount(desc) == count)
-					{
-						redundant.add(go);
-						break;
-					}
-				}
-			}
-			//Then we remove them
-			for(int r : redundant)
-				testByType[i].removeTerm(r);
-			//The root, while not redundant is irrelevant (it will necessarily
-			//(have p-value = 1, so there is no point in testing it)
-			testByType[i].removeTerm(o.getRoot(i));
-		}
 		//Finally, we can compute the p-values
 		for(int i = 0; i < 3; i++)
 		{
