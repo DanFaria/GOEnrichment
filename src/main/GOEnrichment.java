@@ -60,7 +60,7 @@ public class GOEnrichment
 	private CorrectionOption c;
 	private boolean excludeSingletons = true;
 	private boolean useAllRelations = false;
-	private double cutOff = 0.05;
+	private double cutOff = 0.01;
 		
 	
 	private GOEnrichment()
