@@ -21,9 +21,9 @@ public class Main
 	private static String mfResult = "MF_result.txt";
 	private static String bpResult = "BP_result.txt";
 	private static String ccResult = "CC_result.txt";
-	private static String mfFResult = "MF_summary.txt";
-	private static String bpFResult = "BP_summary.txt";
-	private static String ccFResult = "CC_summary.txt";
+	private static String mfSummary = "MF_summary.txt";
+	private static String bpSummary = "BP_summary.txt";
+	private static String ccSummary = "CC_summary.txt";
 	private static String mfGraph = "MF_graph.graphml";
 	private static String bpGraph = "BP_graph.graphml";
 	private static String ccGraph = "CC_graph.graphml";
@@ -60,9 +60,9 @@ public class Main
 		ea.saveGraph(1, bpGraph);
 		ea.saveResult(2, ccResult);
 		ea.saveGraph(2, ccGraph);
-		ea.saveFilteredResult(0, mfFResult);
-		ea.saveFilteredResult(1, bpFResult);
-		ea.saveFilteredResult(2, ccFResult);
+		ea.saveFilteredResult(0, mfSummary);
+		ea.saveFilteredResult(1, bpSummary);
+		ea.saveFilteredResult(2, ccSummary);
 		
 		ea.exit();
 	}
@@ -83,6 +83,9 @@ public class Main
 		System.out.println("[-mfr, --mf_result FILE_PATH\tPath to the output MF result file]");
 		System.out.println("[-bpr, --bp_result FILE_PATH\tPath to the output BP result file]");
 		System.out.println("[-ccr, --cc_result FILE_PATH\tPath to the output CC result file]");
+		System.out.println("[-mfs, --mf_summary FILE_PATH\tPath to the output MF summary file]");
+		System.out.println("[-bps, --bp_summary FILE_PATH\tPath to the output BP summary file]");
+		System.out.println("[-ccs, --cc_summary FILE_PATH\tPath to the output CC summary file]");
 		System.out.println("[-mfg, --mf_graph FILE_PATH\tPath to the output MF graph file]");
 		System.out.println("[-bpg, --bp_graph FILE_PATH\tPath to the output BP graph file]");
 		System.out.println("[-ccg, --cc_graph FILE_PATH\tPath to the output CC graph file]");
@@ -157,6 +160,21 @@ public class Main
 					i < args.length-1)
 			{
 				ccResult = args[++i];
+			}
+			else if((args[i].equalsIgnoreCase("-mfs") || args[i].equalsIgnoreCase("--mf_summary")) &&
+					i < args.length-1)
+			{
+				mfSummary = args[++i];
+			}
+			else if((args[i].equalsIgnoreCase("-bps") || args[i].equalsIgnoreCase("--bp_summary")) &&
+					i < args.length-1)
+			{
+				bpSummary = args[++i];
+			}
+			else if((args[i].equalsIgnoreCase("-ccs") || args[i].equalsIgnoreCase("--cc_summary")) &&
+					i < args.length-1)
+			{
+				ccSummary = args[++i];
 			}
 			else if((args[i].equalsIgnoreCase("-mfg") || args[i].equalsIgnoreCase("--mf_graph")) &&
 					i < args.length-1)
