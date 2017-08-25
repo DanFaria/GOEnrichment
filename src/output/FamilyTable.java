@@ -45,11 +45,25 @@ public class FamilyTable
 			return;
 		for(Integer edge : scores.keySet())
 		{
-			if(go.containsSubClass(node, edge) || go.containsSubClass(edge,node))
+			
+			if(goe.useAllRelations())
 			{
-				family.add(node, edge);
-				family.add(edge, node);
+				if(go.containsRelationship(node, edge) || go.containsRelationship(edge,node))
+				{
+					family.add(node, edge);
+					family.add(edge, node);
+				}
 			}
+			else
+			{
+				if(go.containsSubClass(node, edge) || go.containsSubClass(edge,node))
+				{
+					family.add(node, edge);
+					family.add(edge, node);
+				}
+			}
+			
+
 		}
 		family.add(node, node);
 		scores.put(node,test[go.getTypeIndex(node)].getScore(node));

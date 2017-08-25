@@ -30,7 +30,7 @@ public class FamilyFilterer
 		go = goe.getOntology();
 		test = goe.getResults();
 	}
-	
+
 	//Public Methods
 	/**
 	 * Filters the shown terms after a GOEnrichment analysis
@@ -45,7 +45,7 @@ public class FamilyFilterer
 			families = new HashSet<Family>();
 			familyList = new ArrayList<Family>();
 			//Builds the families
-			for(Integer j : go.getDescendants(go.getRoot(i),3,-1))
+			for(Integer j : go.getDescendants(go.getRoot(i),2,-1))
 				familyBuilder(null,i,j);
 
 			//Removes repeated families that may be contained in bigger families
@@ -63,7 +63,7 @@ public class FamilyFilterer
 			HashSet<Integer> initialResult = new HashSet<Integer>();
 			HashSet<Integer> finalResults = new HashSet<Integer>();
 			FamilyTable famTab = new FamilyTable();
-			
+
 			//Clones the TestResult used at the moment
 			TestResult filteredTest = new TestResult(test[i]);
 			for(Family fam : families)
@@ -77,7 +77,7 @@ public class FamilyFilterer
 
 				for(int node : fam.toList())
 					famTab.add(node);
-				
+
 				//Filters the terms for each family
 				HashSet<Integer> filtered = new HashSet<Integer>();
 				while(!famTab.isEmpty())
@@ -89,12 +89,12 @@ public class FamilyFilterer
 				finalResults.addAll(filtered);
 
 			}
-			
+
 			HashMap<Integer,Double> scores = new HashMap<Integer,Double>(filteredTest.getScore());
-			
+
 			for(int term : scores.keySet())
 			{
-				if(!finalResults.contains(term) && (initialResult.contains(term) || filteredTest.getCorrectedPValue(term)>=0.01))
+				if(!finalResults.contains(term) && (initialResult.contains(term) || filteredTest.getCorrectedPValue(term) >= goe.getCuttoff()))
 				{
 					filteredTest.removeTerm(term);
 				}
@@ -104,7 +104,7 @@ public class FamilyFilterer
 		goe.setFilteredResults(finalTestResults);
 	}
 
-	
+
 	//Private Methods	
 	/**
 	 * @param term: the term to search in the family
@@ -119,7 +119,7 @@ public class FamilyFilterer
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @param family: current family, where the term is to be added (initially null)
 	 * @param branch: the branch in which the family is to be inserted, depending on its GO type
@@ -131,10 +131,18 @@ public class FamilyFilterer
 		if(!test[branch].contains(term))
 			return;
 
-		Set<Integer> children = go.getSubClasses(term, true);
+		Set<Integer> children;
+		if(goe.useAllRelations())
+		{
+			children = go.getChildren(term);
+		}
+		else
+		{
+			children = go.getSubClasses(term, true);
+		}
 
 		//If this condition is fulfilled, the term will be added to the family
-		if(test[branch].getCorrectedPValue(term) < 0.01)
+		if(test[branch].getCorrectedPValue(term) < goe.getCuttoff())
 		{ 
 			if(family==null)
 			{
