@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import main.GOEnrichment;
 import util.Table2Set;
 import util.Table3List;
 
@@ -467,9 +468,19 @@ public class GeneOntology
 	 * @param term: the integer representing a term, from the Ontology
 	 * @return the information content of the given term
 	 */
-	public double getInfoContent(int term) {
-		return 1-Math.log(1+getSubClasses(term,false).size())/
-				Math.log(1+getSubClasses(rootIndexes[getTypeIndex(term)],false).size());
+	public double getInfoContent(int term)
+	{
+		if(GOEnrichment.getInstance().useAllRelations())
+		{
+			return 1-Math.log(1+getDescendants(term).size())/
+					Math.log(1+getDescendants(rootIndexes[getTypeIndex(term)]).size());
+		}
+		else
+		{
+			return 1-Math.log(1+getSubClasses(term,false).size())/
+					Math.log(1+getSubClasses(rootIndexes[getTypeIndex(term)],false).size());
+		}
+		
 	}
 	
 	
