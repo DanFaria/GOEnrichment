@@ -1,9 +1,9 @@
 /******************************************************************************
-* Runs the GO Enrichment program, but produces tabular relationship files     *
-* instead of graphml files, to enable viewing the results in Cytoscape.       *
-*                                                                             *
-* @author Daniel Faria                                                        *
-******************************************************************************/
+ * Runs the GO Enrichment program, but produces tabular relationship files     *
+ * instead of graphml files, to enable viewing the results in Cytoscape.       *
+ *                                                                             *
+ * @author Daniel Faria                                                        *
+ ******************************************************************************/
 
 package main;
 
@@ -19,9 +19,9 @@ import statistics.TestResult;
 
 public class Main2
 {
-	//Get the EnrichmentAnalysis instance
+	//Get the GOEnrichment instance
 	private static GOEnrichment ea = GOEnrichment.getInstance();
-	
+
 	private static String logFile = null;
 	private static String goFile = null;
 	private static String annotFile = null;
@@ -30,14 +30,17 @@ public class Main2
 	private static String mfResult = "MF_result.txt";
 	private static String bpResult = "BP_result.txt";
 	private static String ccResult = "CC_result.txt";
-	private static String mfGraph = "MF_graph.txt";
-	private static String bpGraph = "BP_graph.txt";
-	private static String ccGraph = "CC_graph.txt";
+	private static String mfSummary = "MF_summary.txt";
+	private static String bpSummary = "BP_summary.txt";
+	private static String ccSummary = "CC_summary.txt";
+	private static String mfGraph = "MF_graph.graphml";
+	private static String bpGraph = "BP_graph.graphml";
+	private static String ccGraph = "CC_graph.graphml";
 	private static boolean excludeSingletons = true;
 	private static boolean useAllRelations = false;
-	private static double cutOff = 0.05;
+	private static double cutOff = 0.01;
 	private static CorrectionOption co = CorrectionOption.BENJAMINI_HOCHBERG;
-	
+
 	public static void main(String[] args)
 	{
 		//Process the arguments
@@ -47,7 +50,7 @@ public class Main2
 			ea.startLog(logFile);
 		//Verify the arguments
 		verifyArgs();
-		
+
 		ea.setUseAllRelations(useAllRelations);
 		ea.setExcludeSingletons(excludeSingletons);
 		ea.setCutOff(cutOff);
@@ -59,13 +62,16 @@ public class Main2
 		ea.runTest();
 		ea.setCorrectionOption(co);
 		ea.runCorrection();
+		ea.filter();
 		ea.saveResult(0, mfResult);
 		saveGraph(0, mfGraph);
 		ea.saveResult(1, bpResult);
 		saveGraph(1, bpGraph);
 		ea.saveResult(2, ccResult);
 		saveGraph(2, ccGraph);
-		
+		ea.saveFilteredResult(0, mfSummary);
+		ea.saveFilteredResult(1, bpSummary);
+		ea.saveFilteredResult(2, ccSummary);
 
 		ea.exit();
 	}
@@ -86,6 +92,9 @@ public class Main2
 		System.out.println("[-mfr, --mf_result FILE_PATH\tPath to the output MF result file]");
 		System.out.println("[-bpr, --bp_result FILE_PATH\tPath to the output BP result file]");
 		System.out.println("[-ccr, --cc_result FILE_PATH\tPath to the output CC result file]");
+		System.out.println("[-mfs, --mf_summary FILE_PATH\tPath to the output MF summary file]");
+		System.out.println("[-bps, --bp_summary FILE_PATH\tPath to the output BP summary file]");
+		System.out.println("[-ccs, --cc_summary FILE_PATH\tPath to the output CC summary file]");
 		System.out.println("[-mfg, --mf_graph FILE_PATH\tPath to the output MF graph file]");
 		System.out.println("[-bpg, --bp_graph FILE_PATH\tPath to the output BP graph file]");
 		System.out.println("[-ccg, --cc_graph FILE_PATH\tPath to the output CC graph file]");
@@ -97,12 +106,12 @@ public class Main2
 		System.err.println("Type 'java -jar GOEnrichment.jar -h' for details on how to run the program.");
 		System.exit(1);		
 	}
-	
+
 	private static void processArgs(String[] args)
 	{
 		if(args.length == 0)
 			exitHelp();
-		
+
 		//Process the arguments
 		for(int i = 0; i < args.length; i++)
 		{
@@ -164,6 +173,21 @@ public class Main2
 			{
 				ccResult = args[++i];
 			}
+			else if((args[i].equalsIgnoreCase("-mfs") || args[i].equalsIgnoreCase("--mf_summary")) &&
+					i < args.length-1)
+			{
+				mfSummary = args[++i];
+			}
+			else if((args[i].equalsIgnoreCase("-bps") || args[i].equalsIgnoreCase("--bp_summary")) &&
+					i < args.length-1)
+			{
+				bpSummary = args[++i];
+			}
+			else if((args[i].equalsIgnoreCase("-ccs") || args[i].equalsIgnoreCase("--cc_summary")) &&
+					i < args.length-1)
+			{
+				ccSummary = args[++i];
+			}
 			else if((args[i].equalsIgnoreCase("-mfg") || args[i].equalsIgnoreCase("--mf_graph")) &&
 					i < args.length-1)
 			{
@@ -185,7 +209,7 @@ public class Main2
 			}
 		}
 	}
-	
+
 	private static void saveGraph(int type, String file)
 	{
 		HashSet<Integer> nodeIds = new HashSet<Integer>();
@@ -193,7 +217,7 @@ public class Main2
 		int root = go.getRoot(type);
 		nodeIds.add(root);
 		//Create and add each test result node below the cut-off
-		TestResult t = GOEnrichment.getInstance().getResults()[type];
+		TestResult t = GOEnrichment.getInstance().getFilteredResults()[type];
 		for(int term : t.getTerms())
 		{
 			double pValue = t.getCorrectedPValue(term);
@@ -202,7 +226,7 @@ public class Main2
 		}
 		//Create and add each test result node that is an ancestor of a 
 		//node below the cut-off
-		t = GOEnrichment.getInstance().getResults()[type];
+		t = GOEnrichment.getInstance().getFilteredResults()[type];
 		for(int term : t.getTerms())
 		{
 			if(nodeIds.contains(term))
@@ -256,7 +280,7 @@ public class Main2
 		}
 		out.close();
 	}
-	
+
 	//Checks that all mandatory parameters were entered so that the program can proceed
 	private static void verifyArgs()
 	{
