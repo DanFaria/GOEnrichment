@@ -1,8 +1,8 @@
 /******************************************************************************
-* Runs the GO Enrichment program.                                             *
-*                                                                             *
-* @author Daniel Faria                                                        *
-******************************************************************************/
+ * Runs the GO Enrichment program.                                             *
+ *                                                                             *
+ * @author Daniel Faria                                                        *
+ ******************************************************************************/
 
 package main;
 
@@ -10,9 +10,9 @@ import statistics.CorrectionOption;
 
 public class Main
 {
-	//Get the EnrichmentAnalysis instance
+	//Get the GOEnrichment instance
 	private static GOEnrichment ea = GOEnrichment.getInstance();
-	
+
 	private static String logFile = null;
 	private static String goFile = null;
 	private static String annotFile = null;
@@ -21,14 +21,17 @@ public class Main
 	private static String mfResult = "MF_result.txt";
 	private static String bpResult = "BP_result.txt";
 	private static String ccResult = "CC_result.txt";
+	private static String mfFResult = "MF_summary.txt";
+	private static String bpFResult = "BP_summary.txt";
+	private static String ccFResult = "CC_summary.txt";
 	private static String mfGraph = "MF_graph.graphml";
 	private static String bpGraph = "BP_graph.graphml";
 	private static String ccGraph = "CC_graph.graphml";
 	private static boolean excludeSingletons = true;
 	private static boolean useAllRelations = false;
-	private static double cutOff = 0.05;
+	private static double cutOff = 0.01;
 	private static CorrectionOption co = CorrectionOption.BENJAMINI_HOCHBERG;
-	
+
 	public static void main(String[] args)
 	{
 		//Process the arguments
@@ -38,7 +41,7 @@ public class Main
 			ea.startLog(logFile);
 		//Verify the arguments
 		verifyArgs();
-		
+
 		ea.setUseAllRelations(useAllRelations);
 		ea.setExcludeSingletons(excludeSingletons);
 		ea.setCutOff(cutOff);
@@ -50,17 +53,20 @@ public class Main
 		ea.runTest();
 		ea.setCorrectionOption(co);
 		ea.runCorrection();
+		ea.filter();
 		ea.saveResult(0, mfResult);
 		ea.saveGraph(0, mfGraph);
 		ea.saveResult(1, bpResult);
 		ea.saveGraph(1, bpGraph);
 		ea.saveResult(2, ccResult);
 		ea.saveGraph(2, ccGraph);
+		ea.saveFilteredResult(0, mfFResult);
+		ea.saveFilteredResult(1, bpFResult);
+		ea.saveFilteredResult(2, ccFResult);
 		
-
 		ea.exit();
 	}
-	
+
 	private static void exitHelp()
 	{
 		System.out.println("GOEnrichment analyses a set of gene products for GO term enrichment\n");
@@ -88,7 +94,7 @@ public class Main
 		System.err.println("Type 'java -jar GOEnrichment.jar -h' for details on how to run the program.");
 		System.exit(1);		
 	}
-	
+
 	private static void processArgs(String[] args)
 	{
 		//Process the arguments
@@ -173,7 +179,7 @@ public class Main
 			}
 		}
 	}
-	
+
 	//Checks that all mandatory parameters were entered so that the program can proceed
 	private static void verifyArgs()
 	{
@@ -198,4 +204,5 @@ public class Main
 			exitError();
 		}		
 	}
+
 }
