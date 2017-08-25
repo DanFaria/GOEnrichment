@@ -44,7 +44,7 @@ public class Graph
 		nodes.add(new Node(root,1.0,"#FFFFFF"));
 		nodeIds.add(root);
 		//Create and add each test result node below the cut-off
-		t = GOEnrichment.getInstance().getResults()[type];
+		t = GOEnrichment.getInstance().getFilteredResults()[type];
 		for(int term : t.getTerms())
 		{
 			double pValue = t.getCorrectedPValue(term);
@@ -56,7 +56,7 @@ public class Graph
 		}
 		//Create and add each test result node that is an ancestor of a 
 		//node below the cut-off
-		t = GOEnrichment.getInstance().getResults()[type];
+		t = GOEnrichment.getInstance().getFilteredResults()[type];
 		for(int term : t.getTerms())
 		{
 			if(nodeIds.contains(term))
