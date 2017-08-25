@@ -763,7 +763,7 @@ public class GeneOntology
     	{
     		//Get the URI of each property
     		String propUri = op.getIRI().toString();
-    		if(propUri == null)
+    		if(propUri == null || propUri.equals("http://purl.obolibrary.org/obo/BFO_0000051"))
     			continue;
     		propertyUris.put(++index,propUri);
     		uriProperties.put(propUri, index);
