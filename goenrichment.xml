@@ -18,6 +18,9 @@
 --mf_result $mf_result
 --bp_result $bp_result
 --cc_result $cc_result
+--mf_summary $mf_summary
+--bp_summary $bp_summary
+--cc_summary $cc_summary
 --mf_graph $mf_graph
 --bp_graph $bp_graph
 --cc_graph $cc_graph
@@ -47,9 +50,12 @@
 		</param>
 	</inputs>
 	<outputs>
-		<data name="mf_result" format="tabular" label="MF Result File" help="Result file listing molecular function terms"/>
-		<data name="bp_result" format="tabular" label="BP Result File" help="Result file listing biological process terms"/>
-		<data name="cc_result" format="tabular" label="CC Result File" help="Result file listing cellular component terms"/>
+		<data name="mf_result" format="tabular" label="MF Result File" help="Result file listing all molecular function terms"/>
+		<data name="bp_result" format="tabular" label="BP Result File" help="Result file listing all biological process terms"/>
+		<data name="cc_result" format="tabular" label="CC Result File" help="Result file listing all cellular component terms"/>
+		<data name="mf_summary" format="tabular" label="MF Summary File" help="Result file listing representative molecular function terms"/>
+		<data name="bp_summary" format="tabular" label="BP Summary File" help="Result file listing representative biological process terms"/>
+		<data name="cc_summary" format="tabular" label="CC Summary File" help="Result file listing representative cellular component terms"/>
 		<data name="mf_graph" format="GenericXml" label="MF Graph File" help="Graph file showing molecular function terms"/>
 		<data name="bp_graph" format="GenericXml" label="BP Graph File" help="Graph file showing biological process terms"/>
 		<data name="cc_graph" format="GenericXml" label="CC Graph File" help="Graph file showing cellular component terms"/>
@@ -74,9 +80,10 @@ GOEnrichment requires:
 
 .. class:: infomark
 
-GOEnrichment produces a result file and a graph file for each GO type (MF, BP and CC):
+GOEnrichment produces a result file, a summary file and a graph file for each GO type (MF, BP and CC):
 
 - -The result file is a tabular list of all GO terms present in the study set and their respective p-values.
+- -The summary file is a tabular list of the representative GO terms present in the study set and their respective p-values.
 - -The graph file is a GraphML file that can be viewed in the yEd free Graph editor (http://www.yworks.com/en/products/yfiles/yed/).
 
 -----
