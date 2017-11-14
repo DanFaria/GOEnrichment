@@ -153,9 +153,9 @@ public class GraphExporter
 		nodes.put(term,node);
 	}
 	
-	private static void addEdge(int child, int parent)
+	private static void addEdge(int descendant, int ancestor)
 	{
-		int relId = go.getRelationship(child, parent).getProperty();
+		int relId = go.getRelationship(descendant, ancestor).getProperty();
 		String label;
 		String color;
 		int dashed = 0;
@@ -169,10 +169,10 @@ public class GraphExporter
 			label = go.getPropertyName(relId);
 			color = "#CCCCCC";
 		}
-		int distance = go.getDistance(child, parent);
+		int distance = go.getDistance(descendant, ancestor);
 		if(distance != 1)
 			dashed = 1;
-		mxCell edge = (mxCell) graph.insertEdge(parent, child + "-" + parent, label, parent, child, "startArrow=classic;endArrow=null;dashed="+
+		mxCell edge = (mxCell) graph.insertEdge(parent, descendant + "-" + ancestor, label, ancestor, descendant, "startArrow=classic;endArrow=null;dashed="+
 			dashed+";fontColor="+color+";strokeColor="+color);
 		edges.add(edge);
 	}
