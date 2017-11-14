@@ -24,9 +24,9 @@ public class Main
 	private static String mfSummary = "MF_summary.txt";
 	private static String bpSummary = "BP_summary.txt";
 	private static String ccSummary = "CC_summary.txt";
-	private static String mfGraph = "MF_graph.graphml";
-	private static String bpGraph = "BP_graph.graphml";
-	private static String ccGraph = "CC_graph.graphml";
+	private static String mfGraph = "MF_graph.png";
+	private static String bpGraph = "BP_graph.png";
+	private static String ccGraph = "CC_graph.png";
 	private static boolean excludeSingletons = true;
 	private static boolean useAllRelations = false;
 	private static double cutOff = 0.01;
