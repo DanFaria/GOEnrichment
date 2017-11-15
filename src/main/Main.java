@@ -6,6 +6,7 @@
 
 package main;
 
+import graph.GraphFormat;
 import statistics.CorrectionOption;
 
 public class Main
@@ -21,12 +22,11 @@ public class Main
 	private static String mfResult = "MF_result.txt";
 	private static String bpResult = "BP_result.txt";
 	private static String ccResult = "CC_result.txt";
-	private static String mfSummary = "MF_summary.txt";
-	private static String bpSummary = "BP_summary.txt";
-	private static String ccSummary = "CC_summary.txt";
-	private static String mfGraph = "MF_graph.png";
-	private static String bpGraph = "BP_graph.png";
-	private static String ccGraph = "CC_graph.png";
+	private static String mfGraph = "MF_graph";
+	private static String bpGraph = "BP_graph";
+	private static String ccGraph = "CC_graph";
+	private static GraphFormat format = GraphFormat.PNG;
+	private static boolean summarizeOutput = true;
 	private static boolean excludeSingletons = true;
 	private static boolean useAllRelations = false;
 	private static double cutOff = 0.01;
@@ -42,6 +42,7 @@ public class Main
 		//Verify the arguments
 		verifyArgs();
 
+		ea.setSummarizeOutput(summarizeOutput);
 		ea.setUseAllRelations(useAllRelations);
 		ea.setExcludeSingletons(excludeSingletons);
 		ea.setCutOff(cutOff);
@@ -60,9 +61,6 @@ public class Main
 		ea.saveGraph(1, bpGraph);
 		ea.saveResult(2, ccResult);
 		ea.saveGraph(2, ccGraph);
-		ea.saveFilteredResult(0, mfSummary);
-		ea.saveFilteredResult(1, bpSummary);
-		ea.saveFilteredResult(2, ccSummary);
 		
 		ea.exit();
 	}
@@ -133,6 +131,12 @@ public class Main
 			{
 				co = CorrectionOption.parse(args[++i]);
 			}
+			else if((args[i].equalsIgnoreCase("-gf") || args[i].equalsIgnoreCase("--graph_format")) &&
+					i < args.length-1)
+			{
+				format = GraphFormat.parseFormat(args[++i]);
+			}
+
 			else if((args[i].equalsIgnoreCase("-e") || args[i].equalsIgnoreCase("--exclude_singletons")))
 			{
 				excludeSingletons = true;
@@ -160,21 +164,6 @@ public class Main
 					i < args.length-1)
 			{
 				ccResult = args[++i];
-			}
-			else if((args[i].equalsIgnoreCase("-mfs") || args[i].equalsIgnoreCase("--mf_summary")) &&
-					i < args.length-1)
-			{
-				mfSummary = args[++i];
-			}
-			else if((args[i].equalsIgnoreCase("-bps") || args[i].equalsIgnoreCase("--bp_summary")) &&
-					i < args.length-1)
-			{
-				bpSummary = args[++i];
-			}
-			else if((args[i].equalsIgnoreCase("-ccs") || args[i].equalsIgnoreCase("--cc_summary")) &&
-					i < args.length-1)
-			{
-				ccSummary = args[++i];
 			}
 			else if((args[i].equalsIgnoreCase("-mfg") || args[i].equalsIgnoreCase("--mf_graph")) &&
 					i < args.length-1)
