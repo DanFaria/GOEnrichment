@@ -7,8 +7,8 @@
 
 package main;
 
-import graph.Graph;
 import graph.GraphExporter;
+import graph.GraphFormat;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -58,7 +58,9 @@ public class GOEnrichment
 	private TestResult[] filteredResults;
 	
 	//Options:
+	private GraphFormat gf;
 	private CorrectionOption c;
+	private boolean summarizeOutput = true;
 	private boolean excludeSingletons = true;
 	private boolean useAllRelations = false;
 	private double cutOff = 0.01;
@@ -110,6 +112,11 @@ public class GOEnrichment
 	public double getCuttoff()
 	{
 		return cutOff;
+	}
+	
+	public GraphFormat getGraphFormat()
+	{
+		return gf;
 	}
 
 	public GeneOntology getOntology()
@@ -260,8 +267,6 @@ public class GOEnrichment
 		try
 		{
 			System.out.println(df.format(new Date()) + " - Saving graph file '" + file + "'");
-//			Graph g = new Graph(index);
-//			g.save(file);
 			GraphExporter.saveGraph(index, file);
 			System.out.println(df.format(new Date()) + " - Finished");
 		}
@@ -281,66 +286,28 @@ public class GOEnrichment
 		{
 			System.out.println(df.format(new Date()) + " - Saving result file '" + file + "'");
 			PrintWriter out = new PrintWriter(new FileWriter(file));
+			TestResult r;
+			if(summarizeOutput)
+				r = filteredResults[index];
+			else
+				r = results[index];
+				
 			//First write the header
 			out.print("GO Term\tStudy #\tStudy Freq.\tPop. Freq.\tp-value\t");
 			if(c.equals(CorrectionOption.BENJAMINI_HOCHBERG))
 				out.print("q-value\t");
 			else
 				out.print("corrected p-value\t");
-			out.println("score\tname\tgene products");
+			out.println("name\tgene products");
 			//Then write the term information (in ascending p-value order)
-			for(int term : results[index].getTerms())
+			for(int term : r.getTerms())
 			{
 				out.print(go.getLocalName(term) + "\t");
-				out.print(results[index].getStudyCount(term) + "\t");
-				out.print(NumberFormatter.formatPercent(results[index].getStudyCount(term)*1.0/results[index].getStudyTotal()) + "\t");
-				out.print(NumberFormatter.formatPercent(results[index].getPopulationCount(term)*1.0/results[index].getPopulationTotal()) + "\t");
-				out.print(NumberFormatter.formatPValue(results[index].getPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPValue(results[index].getCorrectedPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPValue(results[index].getScore(term)) + "\t");
-				out.print(go.getLabel(term) + "\t");
-				String genes = "";
-				for(String gene : results[index].getStudyAnnotations(term))
-					genes += gene + ",";
-				out.println(genes.substring(0, genes.length()-1));
-			}
-			out.close();
-			System.out.println(df.format(new Date()) + " - Finished");
-		}
-		catch(IOException e)
-		{
-			System.err.println("Error: could not write result file '" + file + "'!");
-			e.printStackTrace();
-			try{ log.close(); }
-			catch (IOException f){ /*Do nothing*/ }
-			System.exit(1);			
-		}
-	}
-	
-	public void saveFilteredResult(int index, String file)
-	{
-		try
-		{
-			System.out.println(df.format(new Date()) + " - Saving filtered result file '" + file + "'");
-			PrintWriter out = new PrintWriter(new FileWriter(file));
-			//First write the header
-			out.print("GO Term\tStudy #\tStudy Freq.\tPop. Freq.\tp-value\t");
-			if(c.equals(CorrectionOption.BENJAMINI_HOCHBERG))
-				out.print("q-value\t");
-			else
-				out.print("corrected p-value\t");
-			out.println("score\tname\tgene products");
-			//Then write the term information (in ascending p-value order)
-			for(int term : filteredResults[index].getTerms())
-			{
-				out.print(go.getLocalName(term) + "\t");
-				out.print(filteredResults[index].getStudyCount(term) + "\t");
-				out.print(NumberFormatter.formatPercent(filteredResults[index].getStudyCount(term)*1.0/filteredResults[index].getStudyTotal()) + "\t");
-				out.print(NumberFormatter.formatPercent(filteredResults[index].getPopulationCount(term)*1.0/filteredResults[index].getPopulationTotal()) + "\t");
-				out.print(NumberFormatter.formatPValue(filteredResults[index].getPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPValue(filteredResults[index].getCorrectedPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPValue(filteredResults[index].getCorrectedPValue(term)) + "\t");
-				out.print(NumberFormatter.formatPValue(results[index].getScore(term)) + "\t");
+				out.print(r.getStudyCount(term) + "\t");
+				out.print(NumberFormatter.formatPercent(r.getStudyCount(term)*1.0/filteredResults[index].getStudyTotal()) + "\t");
+				out.print(NumberFormatter.formatPercent(r.getPopulationCount(term)*1.0/filteredResults[index].getPopulationTotal()) + "\t");
+				out.print(NumberFormatter.formatPValue(r.getPValue(term)) + "\t");
+				out.print(NumberFormatter.formatPValue(r.getCorrectedPValue(term)) + "\t");
 				out.print(go.getLabel(term) + "\t");
 				String genes = "";
 				for(String gene : filteredResults[index].getStudyAnnotations(term))
@@ -375,6 +342,11 @@ public class GOEnrichment
 		this.excludeSingletons = b;
 	}
 	
+	public void setGraphFormat(GraphFormat gf)
+	{
+		this.gf = gf;
+	}
+	
 	public void setResults(TestResult[] results)
 	{
 		this.results = results;
@@ -383,6 +355,11 @@ public class GOEnrichment
 	public void setFilteredResults(TestResult[] results)
 	{
 		this.filteredResults = results;
+	}
+	
+	public void setSummarizeOutput(boolean b)
+	{
+		this.summarizeOutput = b;
 	}
 	
 	public void setUseAllRelations(boolean b)
@@ -404,6 +381,11 @@ public class GOEnrichment
 		{
 			System.out.println(df.format(new Date()) + " - Warning: could not initiate log file!");
 		}
+	}
+	
+	public boolean summarizeOutput()
+	{
+		return summarizeOutput;
 	}
 	
 	public boolean useAllRelations()
