@@ -28,7 +28,7 @@ import ontology.GeneOntology;
 import statistics.TestResult;
 import util.NumberFormatter;
 
-public class GraphExporter
+public class Graph
 {
 	private static mxGraph graph;
 	private static Object parent;
@@ -38,7 +38,7 @@ public class GraphExporter
 	private static TestResult t;
 	private static double cutOff;
 	
-	private GraphExporter(){}
+	private Graph(){}
 	
 	public static void saveGraph(int type, String file) throws IOException
 	{
@@ -207,74 +207,74 @@ public class GraphExporter
 		return color;
 	}
 	
-//	private static void saveGraph(int type, String file)
-//	{
-//		HashSet<Integer> nodeIds = new HashSet<Integer>();
-//		GeneOntology go = ea.getOntology();
-//		int root = go.getRoot(type);
-//		nodeIds.add(root);
-//		//Create and add each test result node below the cut-off
-//		TestResult t = GOEnrichment.getInstance().getFilteredResults()[type];
-//		for(int term : t.getTerms())
-//		{
-//			double pValue = t.getCorrectedPValue(term);
-//			if(pValue <= cutOff)
-//				nodeIds.add(term);
-//		}
-//		//Create and add each test result node that is an ancestor of a 
-//		//node below the cut-off
-//		t = GOEnrichment.getInstance().getFilteredResults()[type];
-//		for(int term : t.getTerms())
-//		{
-//			if(nodeIds.contains(term))
-//				continue;
-//			Set<Integer> descendants = go.getDescendants(term);
-//			for(int d : descendants)
-//			{
-//				if(nodeIds.contains(d))
-//				{
-//					nodeIds.add(term);
-//					break;
-//				}
-//			}
-//		}
-//		PrintWriter out = null;
-//		try
-//		{
-//			out = new PrintWriter(new FileWriter(file));
-//		}
-//		catch (IOException e)
-//		{
-//			e.printStackTrace();
-//			System.exit(1);
-//		}
-//		//Proceed with the edges
-//		for(int term : nodeIds)
-//		{
-//			//We create an edge between each term and each of its ancestors that...
-//			Set<Integer> ancestors = go.getAncestors(term);
-//			for(int ancestor : ancestors)
-//			{
-//				//...is present as a node in the graph and...
-//				boolean toAdd = nodeIds.contains(ancestor);
-//				if(!toAdd)
-//					continue;
-//				//...has no descendant in its path to the term (i.e., a descendant that
-//				//is an ancestor of the term and present as a node in the graph)
-//				for(int descendant : go.getDescendants(ancestor))
-//				{
-//					if(ancestors.contains(descendant) && nodeIds.contains(descendant))
-//					{
-//						toAdd = false;
-//						break;
-//					}
-//				}
-//				if(toAdd)
-//					out.println(go.getLocalName(term) + "\t" +
-//							go.getPropertyName(go.getRelationship(term, ancestor).getProperty()) +
-//							"\t" + go.getLocalName(ancestor));
-//			}
-//		}
-//		out.close();
-//	}
+	private static void saveGraphTXT(int type, String file)
+	{
+		HashSet<Integer> nodeIds = new HashSet<Integer>();
+		GeneOntology go = ea.getOntology();
+		int root = go.getRoot(type);
+		nodeIds.add(root);
+		//Create and add each test result node below the cut-off
+		TestResult t = GOEnrichment.getInstance().getFilteredResults()[type];
+		for(int term : t.getTerms())
+		{
+			double pValue = t.getCorrectedPValue(term);
+			if(pValue <= cutOff)
+				nodeIds.add(term);
+		}
+		//Create and add each test result node that is an ancestor of a 
+		//node below the cut-off
+		t = GOEnrichment.getInstance().getFilteredResults()[type];
+		for(int term : t.getTerms())
+		{
+			if(nodeIds.contains(term))
+				continue;
+			Set<Integer> descendants = go.getDescendants(term);
+			for(int d : descendants)
+			{
+				if(nodeIds.contains(d))
+				{
+					nodeIds.add(term);
+					break;
+				}
+			}
+		}
+		PrintWriter out = null;
+		try
+		{
+			out = new PrintWriter(new FileWriter(file));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+		//Proceed with the edges
+		for(int term : nodeIds)
+		{
+			//We create an edge between each term and each of its ancestors that...
+			Set<Integer> ancestors = go.getAncestors(term);
+			for(int ancestor : ancestors)
+			{
+				//...is present as a node in the graph and...
+				boolean toAdd = nodeIds.contains(ancestor);
+				if(!toAdd)
+					continue;
+				//...has no descendant in its path to the term (i.e., a descendant that
+				//is an ancestor of the term and present as a node in the graph)
+				for(int descendant : go.getDescendants(ancestor))
+				{
+					if(ancestors.contains(descendant) && nodeIds.contains(descendant))
+					{
+						toAdd = false;
+						break;
+					}
+				}
+				if(toAdd)
+					out.println(go.getLocalName(term) + "\t" +
+							go.getPropertyName(go.getRelationship(term, ancestor).getProperty()) +
+							"\t" + go.getLocalName(ancestor));
+			}
+		}
+		out.close();
+	}
 }
