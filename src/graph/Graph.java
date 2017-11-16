@@ -12,15 +12,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import com.mxgraph.canvas.mxICanvas;
+import com.mxgraph.canvas.mxSvgCanvas;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
+import com.mxgraph.util.mxCellRenderer.CanvasFactory;
+import com.mxgraph.util.mxDomUtils;
+import com.mxgraph.util.mxUtils;
+import com.mxgraph.util.mxXmlUtils;
 import com.mxgraph.view.mxGraph;
 
 import main.GOEnrichment;
@@ -37,24 +42,35 @@ public class Graph
 	private static GeneOntology go;
 	private static TestResult t;
 	private static double cutOff;
+	private static GraphFormat gf;
 	
 	private Graph(){}
 	
-	public static void saveGraph(int type, String file) throws IOException
+	public static void save(int type, String file) throws IOException
 	{
-		go = GOEnrichment.getInstance().getOntology();
-		cutOff = GOEnrichment.getInstance().getCuttoff();
-
-		graph = new mxGraph();
-		parent = graph.getDefaultParent();
+		//Get the parameters and data from the GOEnrichment class
+		GOEnrichment ge = GOEnrichment.getInstance();
+		go = ge.getOntology();
+		cutOff = ge.getCuttoff();
+		if(ge.summarizeOutput())
+			t = ge.getFilteredResults()[type];
+		else
+			t = ge.getResults()[type];
+		gf = ge.getGraphFormat();
+		//Initialize the data structures
 		nodes = new HashMap<Integer,Object>();
 		edges = new Vector<Object>();
-
-		graph.getModel().beginUpdate();
+		//If the output is not text, initialize the mxGraph
+		if(!gf.equals(GraphFormat.TXT))
+		{
+			graph = new mxGraph();
+			parent = graph.getDefaultParent();
+			graph.getModel().beginUpdate();
+		}
 		try
 		{
-			int root = go.getRoot(type);
-			addNode(root,1.0,"#FFFFFF");
+			//Start with the root
+			addNode(go.getRoot(type),1.0,"#FFFFFF");
 			//Create and add each test result node below the cut-off
 			t = GOEnrichment.getInstance().getFilteredResults()[type];
 			for(int term : t.getTerms())
@@ -106,22 +122,91 @@ public class Graph
 						addEdge(term,ancestor);
 				}
 			}
-			mxHierarchicalLayout l = new mxHierarchicalLayout(graph);
-			l.execute(parent);
+			if(!gf.equals(GraphFormat.TXT))
+			{
+				mxHierarchicalLayout l = new mxHierarchicalLayout(graph);
+				l.execute(parent);
+			}
 		}
 		finally
 		{
-			graph.getModel().endUpdate();
-		}
+			if(!gf.equals(GraphFormat.TXT))
+				graph.getModel().endUpdate();
+		}		
+		
 
-		BufferedImage image = mxCellRenderer.createBufferedImage(graph, graph.getChildCells(parent), 1.0, Color.WHITE, false, null);
-		ImageIO.write(image, "PNG", new File(file));
+		if(gf.equals(GraphFormat.TXT))
+		{
+			PrintWriter out = new PrintWriter(new FileWriter(file));
+			for(Object o : edges)
+				out.println(o.toString());
+			out.close();
+		}
+		else if(gf.equals(GraphFormat.SVG))
+		{
+			mxSvgCanvas canvas = (mxSvgCanvas) mxCellRenderer.drawCells(graph, graph.getChildCells(parent), 1, null, new CanvasFactory()
+				{
+				    public mxICanvas createCanvas(int width, int height)
+				    {
+				        mxSvgCanvas canvas = new mxSvgCanvas(mxDomUtils.createSvgDocument(width, height));
+				        canvas.setEmbedded(true);
+				        return canvas;
+				    } 
+				}
+			);
+			mxUtils.writeFile(mxXmlUtils.getXml(canvas.getDocument()), file);
+		}
+		else
+		{
+			BufferedImage image = mxCellRenderer.createBufferedImage(graph, graph.getChildCells(parent), 1.0, Color.WHITE, false, null);
+			ImageIO.write(image, "PNG", new File(file));
+		}
 	}
 	
 	private static void addNode(int term, double fraction, String color)
 	{
+		if(gf.equals(GraphFormat.TXT))
+			nodes.put(term, go.getLocalName(term));
+		else
+		{
+			String label = formatLabel(term) + "\n(" + NumberFormatter.formatPercent(fraction) + ")";
+			mxCell node = (mxCell) graph.insertVertex(parent, ""+term, label, 0.0, 0.0, 0.0, 0.0, "strokeColor=#000000;fillColor="+color);
+			graph.updateCellSize(node);
+			nodes.put(term,node);
+		}
+	}
+	
+	private static void addEdge(int descendant, int ancestor)
+	{
+		int relId = go.getRelationship(descendant, ancestor).getProperty();
+		String label = go.getPropertyName(relId);
+		if(gf.equals(GraphFormat.TXT))
+		{
+			edges.add(nodes.get(descendant) + "\t" + label + "\t" +
+					nodes.get(ancestor));
+		}
+		else
+		{
+			String color = "#CCCCCC";
+			if(relId == -1)
+			{
+				label = null;
+				color = "#000000";
+			}
+			int dashed = 0;
+			if(go.getDistance(descendant, ancestor) != 1)
+				dashed = 1;
+			mxCell edge = (mxCell) graph.insertEdge(parent, descendant + "-" + ancestor, label,
+					nodes.get(ancestor), nodes.get(descendant), "startArrow=classic;endArrow=null;dashed="+
+					dashed+";fontColor="+color+";strokeColor="+color);
+			edges.add(edge);
+		}
+	}
+	
+	private static String formatLabel(int term)
+	{
 		//Get and format the label
-		String[] words = GOEnrichment.getInstance().getOntology().getLabel(term).split(" ");
+		String[] words = go.getLabel(term).split(" ");
 		int limit = 15;
 		for(String w : words)
 			limit = Math.max(limit, w.length());
@@ -149,35 +234,7 @@ public class Graph
 				label += "-\n";
 			label += words[i];
 		}
-		label += "\n(" + NumberFormatter.formatPercent(fraction) + ")";
-		mxCell node = (mxCell) graph.insertVertex(parent, ""+term, label, 0.0, 0.0, 0.0, 0.0, "strokeColor=#000000;fillColor="+color);
-		graph.updateCellSize(node);
-		nodes.put(term,node);
-	}
-	
-	private static void addEdge(int descendant, int ancestor)
-	{
-		int relId = go.getRelationship(descendant, ancestor).getProperty();
-		String label;
-		String color;
-		int dashed = 0;
-		if(relId == -1)
-		{
-			label = null;
-			color = "#000000";
-		}
-		else
-		{
-			label = go.getPropertyName(relId);
-			color = "#CCCCCC";
-		}
-		int distance = go.getDistance(descendant, ancestor);
-		if(distance != 1)
-			dashed = 1;
-		mxCell edge = (mxCell) graph.insertEdge(parent, descendant + "-" + ancestor, label,
-			nodes.get(ancestor), nodes.get(descendant), "startArrow=classic;endArrow=null;dashed="+
-			dashed+";fontColor="+color+";strokeColor="+color);
-		edges.add(edge);
+		return label;
 	}
 	
 	private static String getColor(double pValue)
@@ -205,76 +262,5 @@ public class Graph
 		else
 			color = "#FF6600";
 		return color;
-	}
-	
-	private static void saveGraphTXT(int type, String file)
-	{
-		HashSet<Integer> nodeIds = new HashSet<Integer>();
-		GeneOntology go = ea.getOntology();
-		int root = go.getRoot(type);
-		nodeIds.add(root);
-		//Create and add each test result node below the cut-off
-		TestResult t = GOEnrichment.getInstance().getFilteredResults()[type];
-		for(int term : t.getTerms())
-		{
-			double pValue = t.getCorrectedPValue(term);
-			if(pValue <= cutOff)
-				nodeIds.add(term);
-		}
-		//Create and add each test result node that is an ancestor of a 
-		//node below the cut-off
-		t = GOEnrichment.getInstance().getFilteredResults()[type];
-		for(int term : t.getTerms())
-		{
-			if(nodeIds.contains(term))
-				continue;
-			Set<Integer> descendants = go.getDescendants(term);
-			for(int d : descendants)
-			{
-				if(nodeIds.contains(d))
-				{
-					nodeIds.add(term);
-					break;
-				}
-			}
-		}
-		PrintWriter out = null;
-		try
-		{
-			out = new PrintWriter(new FileWriter(file));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			System.exit(1);
-		}
-		//Proceed with the edges
-		for(int term : nodeIds)
-		{
-			//We create an edge between each term and each of its ancestors that...
-			Set<Integer> ancestors = go.getAncestors(term);
-			for(int ancestor : ancestors)
-			{
-				//...is present as a node in the graph and...
-				boolean toAdd = nodeIds.contains(ancestor);
-				if(!toAdd)
-					continue;
-				//...has no descendant in its path to the term (i.e., a descendant that
-				//is an ancestor of the term and present as a node in the graph)
-				for(int descendant : go.getDescendants(ancestor))
-				{
-					if(ancestors.contains(descendant) && nodeIds.contains(descendant))
-					{
-						toAdd = false;
-						break;
-					}
-				}
-				if(toAdd)
-					out.println(go.getLocalName(term) + "\t" +
-							go.getPropertyName(go.getRelationship(term, ancestor).getProperty()) +
-							"\t" + go.getLocalName(ancestor));
-			}
-		}
-		out.close();
 	}
 }
