@@ -7,7 +7,7 @@
 
 package main;
 
-import graph.GraphExporter;
+import graph.Graph;
 import graph.GraphFormat;
 
 import java.io.BufferedReader;
@@ -267,7 +267,7 @@ public class GOEnrichment
 		try
 		{
 			System.out.println(df.format(new Date()) + " - Saving graph file '" + file + "'");
-			GraphExporter.saveGraph(index, file);
+			Graph.save(index, file);
 			System.out.println(df.format(new Date()) + " - Finished");
 		}
 		catch(IOException e)

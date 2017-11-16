@@ -46,6 +46,7 @@ public class Main
 		ea.setUseAllRelations(useAllRelations);
 		ea.setExcludeSingletons(excludeSingletons);
 		ea.setCutOff(cutOff);
+		ea.setGraphFormat(format);
 		ea.openOntology(goFile);
 		ea.openAnnotationSet(annotFile);
 		if(popFile != null)
