@@ -26,7 +26,7 @@ public enum GraphFormat
 	public static GraphFormat parseFormat(String label)
 	{
 		for(GraphFormat g : GraphFormat.values())
-			if(g.label.equals(label))
+			if(g.label.equalsIgnoreCase(label))
 				return g;
 		return GraphFormat.PNG;
 	}
