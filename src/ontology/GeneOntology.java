@@ -74,8 +74,6 @@ public class GeneOntology
 	
 	private HashSet<String> deprecated;
 	private HashMap<String,String> alternatives;
-	
-	private HashMap<Integer,Double> infoContent;
 
 //Constructors
 
@@ -101,7 +99,6 @@ public class GeneOntology
 		rootIndexes = new int[3];
 		deprecated = new HashSet<String>();
 		alternatives = new HashMap<String,String>();
-		infoContent = new HashMap<Integer,Double>();
         //Increase the entity expansion limit to allow large ontologies
         System.setProperty(LIMIT, "1000000");
         //Get an Ontology Manager
@@ -473,9 +470,16 @@ public class GeneOntology
 	 */
 	public double getInfoContent(int term)
 	{
-		if(infoContent.containsKey(term))
-			return infoContent.get(term);
-		return 0.0;
+		if(GOEnrichment.getInstance().useAllRelations())
+		{
+			return 1-Math.log(1+getDescendants(term).size())/
+					Math.log(1+getDescendants(rootIndexes[getTypeIndex(term)]).size());
+		}
+		else
+		{
+			return 1-Math.log(1+getSubClasses(term,false).size())/
+					Math.log(1+getSubClasses(rootIndexes[getTypeIndex(term)],false).size());
+		}		
 	}
 	
 	
@@ -671,8 +675,6 @@ public class GeneOntology
 		getRelationships(o);
 		//Extend the relationship map
 		transitiveClosure();
-		//Compute the information contents
-		computeIC();
 	}
 	
 	//Processes the classes, their lexical information and cross-references
@@ -965,23 +967,5 @@ public class GeneOntology
 				}
 			}
 		}
-	}
-	
-	private void computeIC()
-	{
-		for(Integer term : termTypes.keySet())
-		{
-			int root = rootIndexes[termTypes.get(term)];
-			if(GOEnrichment.getInstance().useAllRelations())
-			{
-				infoContent.put(term, 1-Math.log(1+getDescendants(term).size())/
-						Math.log(1+getDescendants(root).size()));
-			}
-			else
-			{
-				infoContent.put(term, 1-Math.log(1+getSubClasses(term,false).size())/
-						Math.log(1+getSubClasses(root,false).size()));
-			}
-		}
-	}
+	}	
 }
