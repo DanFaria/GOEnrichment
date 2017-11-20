@@ -1,12 +1,10 @@
-package output;
+package filter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import main.GOEnrichment;
 import ontology.GeneOntology;
-import statistics.TestResult;
-import util.NumberFormatter;
 
 public class Family
 {
@@ -123,9 +121,7 @@ public class Family
 	{
 		GOEnrichment goe = GOEnrichment.getInstance();
 		GeneOntology go = goe.getOntology();
-		TestResult[] test = goe.getResults();
-		String s =	prefix + " " + go.getLabel(node) + "\t" + 
-				NumberFormatter.formatPercent(test[go.getTypeIndex(node)].getScore(node)) + "\n";
+		String s =	prefix + " " + go.getLabel(node) + "\n";
 		for(Family f : edges)
 		{
 			s += f.toString(prefix + ">");
