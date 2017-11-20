@@ -23,9 +23,9 @@ import java.util.HashSet;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
+import filter.FamilyFilterer;
 import ontology.AnnotationSet;
 import ontology.GeneOntology;
-import output.FamilyFilterer;
 import statistics.CorrectionOption;
 import statistics.FisherExactTest;
 import statistics.MultipleTestCorrection;
@@ -60,10 +60,10 @@ public class GOEnrichment
 	//Options:
 	private GraphFormat gf;
 	private CorrectionOption c;
-	private boolean summarizeOutput = true;
-	private boolean excludeSingletons = true;
-	private boolean useAllRelations = false;
-	private double cutOff = 0.01;
+	private boolean summarizeOutput;
+	private boolean excludeSingletons;
+	private boolean useAllRelations;
+	private double cutOff;
 		
 	
 	private GOEnrichment()
@@ -304,13 +304,13 @@ public class GOEnrichment
 			{
 				out.print(go.getLocalName(term) + "\t");
 				out.print(r.getStudyCount(term) + "\t");
-				out.print(NumberFormatter.formatPercent(r.getStudyCount(term)*1.0/filteredResults[index].getStudyTotal()) + "\t");
-				out.print(NumberFormatter.formatPercent(r.getPopulationCount(term)*1.0/filteredResults[index].getPopulationTotal()) + "\t");
+				out.print(NumberFormatter.formatPercent(r.getStudyCount(term)*1.0/r.getStudyTotal()) + "\t");
+				out.print(NumberFormatter.formatPercent(r.getPopulationCount(term)*1.0/r.getPopulationTotal()) + "\t");
 				out.print(NumberFormatter.formatPValue(r.getPValue(term)) + "\t");
 				out.print(NumberFormatter.formatPValue(r.getCorrectedPValue(term)) + "\t");
 				out.print(go.getLabel(term) + "\t");
 				String genes = "";
-				for(String gene : filteredResults[index].getStudyAnnotations(term))
+				for(String gene : r.getStudyAnnotations(term))
 					genes += gene + ",";
 				out.println(genes.substring(0, genes.length()-1));
 			}
