@@ -129,14 +129,6 @@ public class FamilyTable
 		return bestTerm;
 	}
 	
-	/**
-	 * @return the map of term scores
-	 */
-	public LinkedHashMap<Integer,Double> getScores()
-	{
-		return scores;
-	}
-	
 //Private Methods
 	
 	/**
