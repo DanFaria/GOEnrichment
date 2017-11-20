@@ -55,7 +55,8 @@ public class Main
 		ea.runTest();
 		ea.setCorrectionOption(co);
 		ea.runCorrection();
-		ea.filter();
+		if(summarizeOutput)
+			ea.filter();
 		ea.saveResult(0, mfResult);
 		ea.saveGraph(0, mfGraph);
 		ea.saveResult(1, bpResult);
