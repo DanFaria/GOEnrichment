@@ -1,8 +1,8 @@
-package output;
+package filter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import main.GOEnrichment;
@@ -89,9 +89,8 @@ public class FamilyFilterer
 				finalResults.addAll(filtered);
 
 			}
-
-			HashMap<Integer,Double> scores = new HashMap<Integer,Double>(filteredTest.getScore());
-
+			
+			LinkedHashMap <Integer,Double> scores = famTab.getScores();
 			for(int term : scores.keySet())
 			{
 				if(!finalResults.contains(term) && (initialResult.contains(term) || filteredTest.getCorrectedPValue(term) >= goe.getCuttoff()))
