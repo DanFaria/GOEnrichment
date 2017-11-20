@@ -1,4 +1,4 @@
-<tool id="goenrichment" name="GOEnrichment" version="1.2.2">
+<tool id="goenrichment" name="GOEnrichment" version="2.0.0">
 	<description>performs GO enrichment analysis of a set of gene products</description>
 	<command interpreter="java -jar">GOEnrichment.jar 
 --go $go
@@ -8,19 +8,20 @@
 --population $population
 #end if
 --correction $correction
+#if str($summarize) == 'true'
+--summarized_output
+#end if
 #if str($singletons) == 'true'
 --ignore_singletons
 #end if
 #if str($relations) == 'true'
 --use_all_relations
 #end if
+--graph_format $graph
 --cut_off $cutoff
 --mf_result $mf_result
 --bp_result $bp_result
 --cc_result $cc_result
---mf_summary $mf_summary
---bp_summary $bp_summary
---cc_summary $cc_summary
 --mf_graph $mf_graph
 --bp_graph $bp_graph
 --cc_graph $cc_graph
@@ -40,30 +41,57 @@
 			<option value="Sidak"/>
 			<option value="Bonferroni"/>
 		</param>
+		<param name="graph" type="select" label="Output Graph Format" help="The format of the output graphs (png, svg, or txt for importing into cytoscape).">
+			<option value="png" selected="true"/>
+			<option value="svg"/>
+			<option value="txt"/>
+		</param>
+		<param name="summarize" type="boolean" checked="true" label="Summarized Output" help="Whether to produce a summarized list of GO terms or the full list of those that are statistically significant"/>
 		<param name="singletons" type="boolean" checked="true" label="Exclude Singletons" help="Whether to exclude GO terms that are annotated to a single gene product in the study set"/>
 		<param name="relations" type="boolean" checked="false" label="Use All Relations" help="Whether to infer annotations through 'part_of' and other non-hierarchical relationships, or only through 'is_a' relations"/>
 		<param name="cutoff" type="select" label="P-Value Cut-Off" help="The corrected p-value (or q-value) cut-off to apply for the graph output.">
 			<option value="1.0"/>
 			<option value="0.1"/>
-			<option value="0.05" selected="true"/>
-			<option value="0.01"/>
+			<option value="0.05"/>
+			<option value="0.01" selected="true"/>
 		</param>
 	</inputs>
 	<outputs>
 		<data name="mf_result" format="tabular" label="MF Result File" help="Result file listing all molecular function terms"/>
 		<data name="bp_result" format="tabular" label="BP Result File" help="Result file listing all biological process terms"/>
 		<data name="cc_result" format="tabular" label="CC Result File" help="Result file listing all cellular component terms"/>
-		<data name="mf_summary" format="tabular" label="MF Summary File" help="Result file listing representative molecular function terms"/>
-		<data name="bp_summary" format="tabular" label="BP Summary File" help="Result file listing representative biological process terms"/>
-		<data name="cc_summary" format="tabular" label="CC Summary File" help="Result file listing representative cellular component terms"/>
-		<data name="mf_graph" format="GenericXml" label="MF Graph File" help="Graph file showing molecular function terms"/>
-		<data name="bp_graph" format="GenericXml" label="BP Graph File" help="Graph file showing biological process terms"/>
-		<data name="cc_graph" format="GenericXml" label="CC Graph File" help="Graph file showing cellular component terms"/>
+		<data name="mf_graph_png" format="png" label="MF Graph File" help="Graph file showing molecular function terms, in png format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="mf_graph_svg" format="svg" label="MF Graph File" help="Graph file showing molecular function terms, in svg format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="mf_graph_txt" format="tabular" label="MF Graph File" help="Graph file showing molecular function terms, in txt format, to import into cytoscape">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="bp_graph_png" format="png" label="BP Graph File" help="Graph file showing biological process terms, in png format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="bp_graph_svg" format="svg" label="BP Graph File" help="Graph file showing biological process terms, in svg format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="bp_graph_txt" format="tabular" label="BP Graph File" help="Graph file showing biological process terms, in txt format, to import into cytoscape">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="cc_graph_png" format="png" label="CC Graph File" help="Graph file showing cellular component terms, in png format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="cc_graph_svg" format="svg" label="CC Graph File" help="Graph file showing cellular component terms, in svg format">
+			<filter>graph == "png"</filter>
+		</data>
+		<data name="cc_graph_txt" format="tabular" label="CC Graph File" help="Graph file showing cellular component terms, in txt format, to import into cytoscape">
+			<filter>graph == "png"</filter>
+		</data>
 	</outputs>
 	<help>
 .. class:: infomark
 
-GOEnrichment is a Java application that can be used to analyze gene product sets (e.g., from microarray experiments) for enriched GO terms.
+GOEnrichment is a Java application that can be used to analyze gene product sets (e.g., from microarray or RNAseq experiments) for enriched GO terms.
 
 -----
 
@@ -80,32 +108,23 @@ GOEnrichment requires:
 
 .. class:: infomark
 
-GOEnrichment produces a result file, a summary file and a graph file for each GO type (MF, BP and CC):
+GOEnrichment produces a tabular result file and a graph file for each GO type (MF, BP and CC):
 
 - -The result file is a tabular list of all GO terms present in the study set and their respective p-values.
-- -The summary file is a tabular list of the representative GO terms present in the study set and their respective p-values.
-- -The graph file is a GraphML file that can be viewed in the yEd free Graph editor (http://www.yworks.com/en/products/yfiles/yed/).
+- -The graph file can be either a png image, an svg image, or a text file for importing into cytoscape (together with the result file).
 
 -----
 
 .. class:: infomark
 
-Note that the graph file is unformatted (all nodes will appear superposed when you initially open it).
-You can format the graph in yEd in two simple steps:
-
-- -Tools > Fit Node to Label [Make sure that neither 'Ignore Width' nor 'Ignore Height' are checked]
-- -Layout > Hierarchical [Set 'Orientation' to 'Bottom to Top']
-
-
 The graph is colored by p-value: terms with p-value above cut-off appear in white; and the color gets darker as the p-value decreases.
 In addition to the name of each GO term, it shows its frequency in the study set.
-Dashed edges indicate that one or more redundant intermediate terms (see below) were excluded from the graph path.
+Dashed edges indicate that one or more intermediate terms were ommited from the graph.
 
 -----
 
 .. class:: warningmark
 
 Gene products listed in either the study or population set files that are not present in the annotation file will be ignored.
-GO terms that are redundant (i.e., have the exact same set of annotations as any one of their children) will be automatically excluded from the analysis and outputs.
 	</help>
 </tool>
