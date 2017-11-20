@@ -1,4 +1,4 @@
-package output;
+package filter;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -45,7 +45,6 @@ public class FamilyTable
 			return;
 		for(Integer edge : scores.keySet())
 		{
-			
 			if(goe.useAllRelations())
 			{
 				if(go.containsRelationship(node, edge) || go.containsRelationship(edge,node))
@@ -66,7 +65,9 @@ public class FamilyTable
 
 		}
 		family.add(node, node);
-		scores.put(node,test[go.getTypeIndex(node)].getScore(node));
+		int type = go.getTypeIndex(node);
+		scores.put(node, go.getInfoContent(node)*test[type].getStudyCount(node)/test[type].getStudyTotal()*
+				Math.ceil(-Math.log10(test[type].getCorrectedPValue(node))));
 	}
 
 	/**
@@ -128,8 +129,16 @@ public class FamilyTable
 		return bestTerm;
 	}
 	
+	/**
+	 * @return the map of term scores
+	 */
+	public LinkedHashMap<Integer,Double> getScores()
+	{
+		return scores;
+	}
 	
-	//Private Methods
+//Private Methods
+	
 	/**
 	 * Removes the given terms from a FamilyTable
 	 * @param toRemove: the set of terms to be removed
