@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import main.GOEnrichment;
 import util.Table2Set;
 
 public class TestResult
@@ -21,7 +20,6 @@ public class TestResult
 	private LinkedHashMap<Integer,Double> correctedPValue;
 	private Table2Set<Integer,String> studyAnnotations;
 	private double minCorrectedPValue;
-	private HashMap<Integer,Double> score;
 
 	public TestResult()
 	{
@@ -33,7 +31,6 @@ public class TestResult
 		correctedPValue = new LinkedHashMap<Integer,Double>();
 		studyAnnotations = new Table2Set<Integer,String>();
 		minCorrectedPValue = 1.0;
-		score = new HashMap<Integer,Double>();
 	}
 	
 	public TestResult(TestResult test) {
@@ -45,7 +42,6 @@ public class TestResult
 		correctedPValue = new LinkedHashMap<Integer,Double>(test.correctedPValue);
 		studyAnnotations = new Table2Set<Integer,String>(test.studyAnnotations);
 		minCorrectedPValue = new Double (test.minCorrectedPValue);
-		score = new HashMap<Integer,Double>(test.score);
 	}
 	
 	public void addStudyAnnotation(int term, String gene)
@@ -106,16 +102,6 @@ public class TestResult
 		return studyTotal;
 	}
 	
-	public double getScore(int term)
-	{
-		return score.get(term);
-	}
-	
-	public HashMap<Integer,Double> getScore()
-	{
-		return score;
-	}
-	
 	/**
 	 * @return the set of GO terms present in the study set of gene products,
 	 * ordered by p-value if p-values have been calculated, or unordered otherwise
@@ -169,7 +155,6 @@ public class TestResult
 		studyCount.remove(term);
 		pValue.remove(term);
 		correctedPValue.remove(term);
-		score.remove(term);
 	}
 	
 	public void setCorrectedPValue(int term, double p)
@@ -177,10 +162,6 @@ public class TestResult
 		correctedPValue.put(term,p);
 		if(minCorrectedPValue > p)
 			minCorrectedPValue = p;
-		
-		double s = GOEnrichment.getInstance().getOntology().getInfoContent(term)*getStudyCount(term)/getStudyTotal()*
-				Math.ceil(-Math.log10(getCorrectedPValue(term)));
-		score.put(term,s);
 	}
 
 	public void setPValue(int term, double p)
