@@ -1,6 +1,9 @@
 <tool id="goenrichment" name="GOEnrichment" version="2.0.0">
 	<description>performs GO enrichment analysis of a set of gene products</description>
-	<command interpreter="java -jar">GOEnrichment.jar 
+    <stdio>
+        <exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
+    </stdio>
+    <command interpreter="java -jar">GOEnrichment.jar 
 --go $go
 --annotation $annotation
 --study $study
@@ -25,21 +28,24 @@
 --mf_graph $mf_graph
 --bp_graph $bp_graph
 --cc_graph $cc_graph
-</command>
-    <stdio>
-        <exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
-    </stdio>
+	</command>
 	<inputs>
 		<param name="go" type="data" format="obo,owl" label="Gene Ontology File" help="Gene Ontology file in OBO or OWL format (see http://geneontology.org/page/download-ontology)"/>
-		<param name="annotation" type="data" label="Gene Product Annotation File" help="Tabular file containing annotations from gene products to GO terms (in GAF or BLAST2GO format, or a simple two-column table)"/>
-		<param name="study" type="data" label="Study Set File" help="File containing the gene products corresponding to the study set (one per line)"/>
-		<param name="population" type="data" optional="true" label="Population Set File (Optional)" help="File containing the gene products corresponding to the population set (one per line). If no file is submitted, the population set will be the set of all gene products listed in the annotation file."/>
-		<param name="correction" type="select" label="Multiple Test Correction" help="The multiple test correction method to use. We recommend Benjamini-Hochberg in settings where a multiple test correction was already employed in selecting the set of gene products, and SDA or Bonferroni-Holm otherwise.">
+		<param name="annotation" type="data" format="txt" label="Gene Product Annotation File" help="Tabular file containing annotations from gene products to GO terms (in GAF or BLAST2GO format, or a simple two-column table)"/>
+		<param name="study" type="data" format="txt" label="Study Set File" help="File containing the gene products corresponding to the study set (one per line)"/>
+		<param name="population" type="data" format="txt" optional="true" label="Population Set File (Optional)" help="File containing the gene products corresponding to the population set (one per line). If no file is submitted, the population set will be the set of all gene products listed in the annotation file."/>
+		<param name="correction" type="select" label="Multiple Test Correction" help="The multiple test correction method to use (Benjamini-Hochberg is recommended).">
 			<option value="Benjamini-Hochberg" selected="true"/>
 			<option value="SDA"/>
 			<option value="Bonferroni-Holm"/>
 			<option value="Sidak"/>
 			<option value="Bonferroni"/>
+		</param>
+		<param name="cutoff" type="select" label="P-Value Cut-Off" help="The corrected p-value (or q-value) cut-off to apply for the graph output.">
+			<option value="1.0"/>
+			<option value="0.1"/>
+			<option value="0.05"/>
+			<option value="0.01" selected="true"/>
 		</param>
 		<param name="graph" type="select" label="Output Graph Format" help="The format of the output graphs (png, svg, or txt for importing into cytoscape).">
 			<option value="png" selected="true"/>
@@ -49,43 +55,28 @@
 		<param name="summarize" type="boolean" checked="true" label="Summarize Output" help="Whether to produce a summarized list of GO terms or the full list of those that are statistically significant"/>
 		<param name="singletons" type="boolean" checked="true" label="Exclude Singletons" help="Whether to exclude GO terms that are annotated to a single gene product in the study set"/>
 		<param name="relations" type="boolean" checked="false" label="Use All Relations" help="Whether to infer annotations through 'part_of' and other non-hierarchical relationships, or only through 'is_a' relations"/>
-		<param name="cutoff" type="select" label="P-Value Cut-Off" help="The corrected p-value (or q-value) cut-off to apply for the graph output.">
-			<option value="1.0"/>
-			<option value="0.1"/>
-			<option value="0.05"/>
-			<option value="0.01" selected="true"/>
-		</param>
 	</inputs>
 	<outputs>
-		<data name="mf_result" format="tabular" label="MF Result File" help="Result file listing all molecular function terms"/>
-		<data name="bp_result" format="tabular" label="BP Result File" help="Result file listing all biological process terms"/>
-		<data name="cc_result" format="tabular" label="CC Result File" help="Result file listing all cellular component terms"/>
-		<data name="mf_graph_png" format="png" label="MF Graph File" help="Graph file showing molecular function terms, in png format">
-			<filter>graph == "png"</filter>
+		<data name="mf_result" format="tabular" label="MF Result File"/>
+		<data name="bp_result" format="tabular" label="BP Result File"/>
+		<data name="cc_result" format="tabular" label="CC Result File"/>
+		<data name="mf_graph" format="png" label="MF Graph File">
+			<change_format>
+				<when input="graph" value="svg" format="svg"/>
+				<when input="graph" value="txt" format="txt"/>
+			</change_format>
 		</data>
-		<data name="mf_graph_svg" format="svg" label="MF Graph File" help="Graph file showing molecular function terms, in svg format">
-			<filter>graph == "svg"</filter>
+		<data name="bp_graph" format="png" label="BP Graph File">
+			<change_format>
+				<when input="graph" value="svg" format="svg"/>
+				<when input="graph" value="txt" format="txt"/>
+			</change_format>
 		</data>
-		<data name="mf_graph_txt" format="tabular" label="MF Graph File" help="Graph file showing molecular function terms, in txt format, to import into cytoscape">
-			<filter>graph == "txt"</filter>
-		</data>
-		<data name="bp_graph_png" format="png" label="BP Graph File" help="Graph file showing biological process terms, in png format">
-			<filter>graph == "png"</filter>
-		</data>
-		<data name="bp_graph_svg" format="svg" label="BP Graph File" help="Graph file showing biological process terms, in svg format">
-			<filter>graph == "svg"</filter>
-		</data>
-		<data name="bp_graph_txt" format="tabular" label="BP Graph File" help="Graph file showing biological process terms, in txt format, to import into cytoscape">
-			<filter>graph == "txt"</filter>
-		</data>
-		<data name="cc_graph_png" format="png" label="CC Graph File" help="Graph file showing cellular component terms, in png format">
-			<filter>graph == "png"</filter>
-		</data>
-		<data name="cc_graph_svg" format="svg" label="CC Graph File" help="Graph file showing cellular component terms, in svg format">
-			<filter>graph == "svg"</filter>
-		</data>
-		<data name="cc_graph_txt" format="tabular" label="CC Graph File" help="Graph file showing cellular component terms, in txt format, to import into cytoscape">
-			<filter>graph == "txt"</filter>
+		<data name="cc_graph" format="png" label="CC Graph File">
+			<change_format>
+				<when input="graph" value="svg" format="svg"/>
+				<when input="graph" value="txt" format="txt"/>
+			</change_format>
 		</data>
 	</outputs>
 	<help>
