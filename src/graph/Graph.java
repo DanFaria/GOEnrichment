@@ -24,6 +24,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.util.mxCellRenderer;
 import com.mxgraph.util.mxCellRenderer.CanvasFactory;
 import com.mxgraph.util.mxDomUtils;
+import com.mxgraph.util.mxRectangle;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.util.mxXmlUtils;
 import com.mxgraph.view.mxGraph;
@@ -169,7 +170,10 @@ public class Graph
 		{
 			String label = formatLabel(term) + "\n(" + NumberFormatter.formatPercent(fraction) + ")";
 			mxCell node = (mxCell) graph.insertVertex(parent, ""+term, label, 0.0, 0.0, 0.0, 0.0, "strokeColor=#000000;fillColor="+color);
-			graph.updateCellSize(node);
+			mxRectangle rect = graph.getPreferredSizeForCell(node);
+			rect.setHeight(rect.getHeight()+4.0);
+			rect.setWidth(rect.getWidth()+6.0);
+			graph.resizeCell(node, rect);
 			nodes.put(term,node);
 		}
 	}
@@ -204,35 +208,23 @@ public class Graph
 	private static String formatLabel(int term)
 	{
 		//Get and format the label
-		String[] words = go.getLabel(term).split(" ");
+		String[] words = go.getLabel(term).split("[ -]");
 		int limit = 15;
 		for(String w : words)
 			limit = Math.max(limit, w.length());
 		String label = words[0];
 		for(int i = 1; i < words.length; i++)
 		{
-			String lastWord = label.substring(label.lastIndexOf("\n")+1);
-			if(words[i].matches("[0-9]+") || words[i].matches("I+") || lastWord.length() + words[i].length() <= limit)
-				label += " ";
-			else
-				label += "\n";
-			label += words[i];
-		}
-		words = label.split("-");
-		limit = 20;
-		for(String w : words)
-			limit = Math.max(limit, w.length());
-		label = words[0];
-		for(int i = 1; i < words.length; i++)
-		{
-			String lastWord = label.substring(label.lastIndexOf("\n")+1);
-			if(lastWord.length() + words[i].length() <= limit)
+			if(go.getLabel(term).charAt(label.length()) == '-')
 				label += "-";
-			else
-				label += "-\n";
+			String lastWord = label.substring(label.lastIndexOf("\n")+1);
+			if(!lastWord.matches("[0-9]{1}\\-") && !words[i].matches("[0-9]{1}") && !words[i].matches("I{1,3}|IV|V") && lastWord.length() + words[i].length() > limit)
+				label += "\n";
+			else if(!label.endsWith("-"))
+				label += " ";
 			label += words[i];
 		}
-		return label;
+		return label.trim();
 	}
 	
 	private static String getColor(double pValue)
