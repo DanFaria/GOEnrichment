@@ -26,8 +26,8 @@ public class Main
 	private static String bpGraph = "BP_graph";
 	private static String ccGraph = "CC_graph";
 	private static GraphFormat format = GraphFormat.PNG;
-	private static boolean summarizeOutput = true;
-	private static boolean excludeSingletons = true;
+	private static boolean summarizeOutput = false;
+	private static boolean excludeSingletons = false;
 	private static boolean useAllRelations = false;
 	private static double cutOff = 0.01;
 	private static CorrectionOption co = CorrectionOption.BENJAMINI_HOCHBERG;
@@ -75,16 +75,15 @@ public class Main
 		System.out.println("-a, --annotation FILE_PATH\tPath to the tabular annotation file (GAF, BLAST2GO or 2-column table format");
 		System.out.println("-s, --study FILE_PATH\tPath to the file listing the study set gene products");
 		System.out.println("[-p, --population FILE_PATH\tPath to the file listing the population set gene products]");
-		System.out.println("-c, --correction OPTION\tMultiple test correction strategy (Bonferroni, Bonferroni-Holm, Sidak, SDA, or Benjamini-Hochberg");
-		System.out.println("-e, --exclude_singletons\tExclude GO terms that are annotated to a single gene product in the study set");
-		System.out.println("-o, --cut_off\tq-value (or corrected p-value) cut-off to apply for the graph output");
-		System.out.println("-r, --use_all_relations\tInfer annotations through 'part_of' and other non-hierarchical relations");
+		System.out.println("[-c, --correction OPTION\tMultiple test correction strategy (Bonferroni, Bonferroni-Holm, Sidak, SDA, or Benjamini-Hochberg)]");
+		System.out.println("[-gf, --graph_format OPTION\tOutput graph format (PNG,SVG,TXT)]");
+		System.out.println("[-so, --summarize_output\tSummarizes the list of enriched GO terms by removing closely related terms]");
+		System.out.println("[-e, --exclude_singletons\tExclude GO terms that are annotated to a single gene product in the study set]");
+		System.out.println("[-o, --cut_off\tq-value (or corrected p-value) cut-off to apply for the graph output]");
+		System.out.println("[-r, --use_all_relations\tInfer annotations through 'part_of' and other non-hierarchical relations]");
 		System.out.println("[-mfr, --mf_result FILE_PATH\tPath to the output MF result file]");
 		System.out.println("[-bpr, --bp_result FILE_PATH\tPath to the output BP result file]");
 		System.out.println("[-ccr, --cc_result FILE_PATH\tPath to the output CC result file]");
-		System.out.println("[-mfs, --mf_summary FILE_PATH\tPath to the output MF summary file]");
-		System.out.println("[-bps, --bp_summary FILE_PATH\tPath to the output BP summary file]");
-		System.out.println("[-ccs, --cc_summary FILE_PATH\tPath to the output CC summary file]");
 		System.out.println("[-mfg, --mf_graph FILE_PATH\tPath to the output MF graph file]");
 		System.out.println("[-bpg, --bp_graph FILE_PATH\tPath to the output BP graph file]");
 		System.out.println("[-ccg, --cc_graph FILE_PATH\tPath to the output CC graph file]");
@@ -137,7 +136,10 @@ public class Main
 			{
 				format = GraphFormat.parseFormat(args[++i]);
 			}
-
+			else if((args[i].equalsIgnoreCase("-so") || args[i].equalsIgnoreCase("--summarize_output")))
+			{
+				summarizeOutput = true;
+			}
 			else if((args[i].equalsIgnoreCase("-e") || args[i].equalsIgnoreCase("--exclude_singletons")))
 			{
 				excludeSingletons = true;

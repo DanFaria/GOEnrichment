@@ -9,7 +9,7 @@
 #end if
 --correction $correction
 #if str($summarize) == 'true'
---summarized_output
+--summarize_output
 #end if
 #if str($singletons) == 'true'
 --ignore_singletons
@@ -46,7 +46,7 @@
 			<option value="svg"/>
 			<option value="txt"/>
 		</param>
-		<param name="summarize" type="boolean" checked="true" label="Summarized Output" help="Whether to produce a summarized list of GO terms or the full list of those that are statistically significant"/>
+		<param name="summarize" type="boolean" checked="true" label="Summarize Output" help="Whether to produce a summarized list of GO terms or the full list of those that are statistically significant"/>
 		<param name="singletons" type="boolean" checked="true" label="Exclude Singletons" help="Whether to exclude GO terms that are annotated to a single gene product in the study set"/>
 		<param name="relations" type="boolean" checked="false" label="Use All Relations" help="Whether to infer annotations through 'part_of' and other non-hierarchical relationships, or only through 'is_a' relations"/>
 		<param name="cutoff" type="select" label="P-Value Cut-Off" help="The corrected p-value (or q-value) cut-off to apply for the graph output.">
