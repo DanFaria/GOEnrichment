@@ -58,16 +58,10 @@ public class Main
 		if(summarizeOutput)
 			ea.filter();
 		ea.saveResult(0, mfResult);
-		if(mfGraph.equals("MF_graph"))
-			mfGraph += "." + format.toString();
 		ea.saveGraph(0, mfGraph);
 		ea.saveResult(1, bpResult);
-		if(bpGraph.equals("BP_graph"))
-			bpGraph += "." + format.toString();
 		ea.saveGraph(1, bpGraph);
 		ea.saveResult(2, ccResult);
-		if(ccGraph.equals("CC_graph"))
-			ccGraph += "." + format.toString();
 		ea.saveGraph(2, ccGraph);
 		
 		ea.exit();
