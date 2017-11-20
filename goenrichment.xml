@@ -64,28 +64,28 @@
 			<filter>graph == "png"</filter>
 		</data>
 		<data name="mf_graph_svg" format="svg" label="MF Graph File" help="Graph file showing molecular function terms, in svg format">
-			<filter>graph == "png"</filter>
+			<filter>graph == "svg"</filter>
 		</data>
 		<data name="mf_graph_txt" format="tabular" label="MF Graph File" help="Graph file showing molecular function terms, in txt format, to import into cytoscape">
-			<filter>graph == "png"</filter>
+			<filter>graph == "txt"</filter>
 		</data>
 		<data name="bp_graph_png" format="png" label="BP Graph File" help="Graph file showing biological process terms, in png format">
 			<filter>graph == "png"</filter>
 		</data>
 		<data name="bp_graph_svg" format="svg" label="BP Graph File" help="Graph file showing biological process terms, in svg format">
-			<filter>graph == "png"</filter>
+			<filter>graph == "svg"</filter>
 		</data>
 		<data name="bp_graph_txt" format="tabular" label="BP Graph File" help="Graph file showing biological process terms, in txt format, to import into cytoscape">
-			<filter>graph == "png"</filter>
+			<filter>graph == "txt"</filter>
 		</data>
 		<data name="cc_graph_png" format="png" label="CC Graph File" help="Graph file showing cellular component terms, in png format">
 			<filter>graph == "png"</filter>
 		</data>
 		<data name="cc_graph_svg" format="svg" label="CC Graph File" help="Graph file showing cellular component terms, in svg format">
-			<filter>graph == "png"</filter>
+			<filter>graph == "svg"</filter>
 		</data>
 		<data name="cc_graph_txt" format="tabular" label="CC Graph File" help="Graph file showing cellular component terms, in txt format, to import into cytoscape">
-			<filter>graph == "png"</filter>
+			<filter>graph == "txt"</filter>
 		</data>
 	</outputs>
 	<help>
