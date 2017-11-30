@@ -231,7 +231,9 @@ public class Graph
 	{
 		String color;
 		double fraction = (Math.log(pValue)-Math.log(cutOff))/Math.log(t.getMinCorrectedPValue());
-		if(fraction < 0.1)
+		if(fraction <= 0)
+			color = "#FFFFFF";
+		else if(fraction < 0.1)
 			color = "#FFFF99";
 		else if(fraction < 0.2)
 			color = "#FFFF77";
