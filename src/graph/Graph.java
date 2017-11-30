@@ -234,15 +234,15 @@ public class Graph
 		if(fraction <= 0)
 			color = "#FFFFFF";
 		else if(fraction < 0.1)
-			color = "#FFFF99";
+			color = "#FFFFCC";
 		else if(fraction < 0.2)
-			color = "#FFFF77";
+			color = "#FFFFAA";
 		else if(fraction < 0.3)
-			color = "#FFFF55";
+			color = "#FFFF88";
 		else if(fraction < 0.4)
-			color = "#FFFF33";
+			color = "#FFFF66";
 		else if(fraction < 0.5)
-			color = "#FFFF11";
+			color = "#FFFF00";
 		else if(fraction < 0.6)
 			color = "#FFEE00";
 		else if(fraction < 0.7)
