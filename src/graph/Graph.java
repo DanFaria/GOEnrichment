@@ -230,26 +230,26 @@ public class Graph
 	private static String getColor(double pValue)
 	{
 		String color;
-		double fraction = (Math.log(pValue)-Math.log(cutOff))/Math.log(t.getMinCorrectedPValue());
-		if(fraction <= 0)
+		double order = (Math.log(cutOff)-Math.log(pValue))/Math.log(10);
+		if(order <= 0)
 			color = "#FFFFFF";
-		else if(fraction < 0.1)
+		else if(order < 1)
 			color = "#FFFFCC";
-		else if(fraction < 0.2)
+		else if(order < 2)
 			color = "#FFFFAA";
-		else if(fraction < 0.3)
+		else if(order < 3)
 			color = "#FFFF88";
-		else if(fraction < 0.4)
+		else if(order < 4)
 			color = "#FFFF66";
-		else if(fraction < 0.5)
+		else if(order < 5)
 			color = "#FFFF00";
-		else if(fraction < 0.6)
+		else if(order < 6)
 			color = "#FFEE00";
-		else if(fraction < 0.7)
+		else if(order < 7)
 			color = "#FFCC00";
-		else if(fraction < 0.8)
+		else if(order < 8)
 			color = "#FFAA00";
-		else if(fraction < 0.9)
+		else if(order < 9)
 			color = "#FF8800";
 		else
 			color = "#FF6600";
