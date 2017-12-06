@@ -22,11 +22,10 @@
 
 1) A tabular Result file listing all non-redundant GO terms present in the study set, their frequencies and p-values
 
-2) A graphml file using the yworks graphml syntax extension, which can be viewed in the free yED graph editor
-   (http://www.yworks.com/xml/schema/graphml/1.0/doc/index.html)
-   [NOTE: the graphml does not include layout information, but can be layed-out within yED]
+2) A graph file in either PNG, SVG or TXT (list of relations)
 
-<b>The JAR and XML files are setup for the Galaxy platform</b> (https://usegalaxy.org/)
+<b>The [XML file](https://github.com/DanFaria/GOEnrichment/blob/master/goenrichment.xml) is setup for the [Galaxy platform](https://usegalaxy.org/)</b>
+
 
 <b>Command Line Usage</b>
 
@@ -36,36 +35,36 @@ To run the [GOEnrichment.jar](https://github.com/DanFaria/GOEnrichment/releases/
 
 The options are:
 
-"-g,--go FILE_PATH"           Path to the Gene Ontology OBO or OWL file [Mandatory]
+"-g,--go FILE_PATH"				Path to the Gene Ontology OBO or OWL file [Mandatory]
 
-"-a,--annotation FILE_PATH"   Path to the tabular annotation file in GAF, BLAST2GO or 2-column table format [Mandatory]
+"-a,--annotation FILE_PATH"	Path to the tabular annotation file in GAF, BLAST2GO or 2-column table format [Mandatory]
 
-"-s,--study FILE_PATH"        Path to the file listing the study set gene products [Mandatory]
+"-s,--study FILE_PATH"			Path to the file listing the study set gene products [Mandatory]
 
-"-p,--population FILE_PATH"   Path to the file listing the population set gene products [Optional] (Default: all the genes in the annotation file)
+"-p,--population FILE_PATH"	Path to the file listing the population set gene products [Optional] (Default: all the genes in the annotation file)
 
-"-c,--correction OPTION"      Multiple test correction strategy; Options: "Bonferroni", "Bonferroni-Holm", "Sidak", "SDA", "Benjamini-Hochberg" [Optional] (Default: "Benjamini-Hochberg")
+"-c,--correction OPTION"		Multiple test correction strategy; Options: "Bonferroni", "Bonferroni-Holm", "Sidak", "SDA", "Benjamini-Hochberg" [Optional] (Default: "Benjamini-Hochberg")
 
-"-gf,--graph_format OPTION"   Output graph format; Options: "PNG", "SVG", "TXT" [Optional] (Default: "PNG")
+"-gf,--graph_format OPTION"	Output graph format; Options: "PNG", "SVG", "TXT" [Optional] (Default: "PNG")
 
-"-so,--summarize_output"      Summarizes the list of enriched GO terms by removing closely related terms [Optional] (Default: FALSE)
+"-so,--summarize_output"		Summarizes the list of enriched GO terms by removing closely related terms [Optional] (Default: FALSE)
 
-"-e,--exclude_singletons"     Exclude GO terms that are annotated to a single gene product in the study set[Optional] (Default: FALSE)
+"-e,--exclude_singletons"		Exclude GO terms that are annotated to a single gene product in the study set[Optional] (Default: FALSE)
 
-"-o,--cut_off"                q-value or corrected p-value cut-off to apply [Optional] (Default: 0.01)
+"-o,--cut_off"						q-value or corrected p-value cut-off to apply [Optional] (Default: 0.01)
 
-"-r,--use_all_relations"      Infer annotations through 'part_of' and other non-hierarchical relations [Optional] (Default: FALSE)
+"-r,--use_all_relations"		Infer annotations through 'part_of' and other non-hierarchical relations [Optional] (Default: FALSE)
 
-"-mfr,--mf_result FILE_PATH"  Path to the output MF result file [Optional] (Default: "MF_Result.txt")
+"-mfr,--mf_result FILE_PATH"	Path to the output MF result file [Optional] (Default: "MF_Result.txt")
 
-"-bpr,--bp_result FILE_PATH"  Path to the output BP result file [Optional] (Default: "BP_Result.txt")
+"-bpr,--bp_result FILE_PATH"	Path to the output BP result file [Optional] (Default: "BP_Result.txt")
 
-"-ccr,--cc_result FILE_PATH"  Path to the output CC result file [Optional] (Default: "CC_Result.txt")
+"-ccr,--cc_result FILE_PATH"	Path to the output CC result file [Optional] (Default: "CC_Result.txt")
 
-"-mfg,--mf_graph FILE_PATH"   Path to the output MF graph file [Optional] (Default: "MF_Graph")
+"-mfg,--mf_graph FILE_PATH"	Path to the output MF graph file [Optional] (Default: "MF_Graph")
 
-"-bpg,--bp_graph FILE_PATH"   Path to the output BP graph file [Optional] (Default: "BP_Graph")
+"-bpg,--bp_graph FILE_PATH"	Path to the output BP graph file [Optional] (Default: "BP_Graph")
 
-"-ccg,--cc_graph FILE_PATH"   Path to the output CC graph file [Optional] (Default: "CC_Graph")
+"-ccg,--cc_graph FILE_PATH"	Path to the output CC graph file [Optional] (Default: "CC_Graph")
 
-"-h,--help"                   Display command line usage instructions
+"-h,--help"							Display command line usage instructions
