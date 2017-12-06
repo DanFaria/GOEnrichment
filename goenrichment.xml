@@ -1,9 +1,16 @@
 <tool id="goenrichment" name="GOEnrichment" version="2.0.0">
 	<description>performs GO enrichment analysis of a set of gene products</description>
+<<<<<<< HEAD
     <stdio>
         <exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
     </stdio>
     <command interpreter="java -jar">GOEnrichment.jar 
+=======
+	<stdio>
+		<exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
+	</stdio>
+	<command interpreter="java -jar">GOEnrichment.jar 
+>>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 --go $go
 --annotation $annotation
 --study $study
@@ -69,12 +76,22 @@
 		<data name="bp_graph" format="png" label="BP Graph File">
 			<change_format>
 				<when input="graph" value="svg" format="svg"/>
+<<<<<<< HEAD
+=======
+			</change_format>
+			<change_format>
+>>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 				<when input="graph" value="txt" format="txt"/>
 			</change_format>
 		</data>
 		<data name="cc_graph" format="png" label="CC Graph File">
 			<change_format>
 				<when input="graph" value="svg" format="svg"/>
+<<<<<<< HEAD
+=======
+			</change_format>
+			<change_format>
+>>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 				<when input="graph" value="txt" format="txt"/>
 			</change_format>
 		</data>
@@ -108,9 +125,9 @@ GOEnrichment produces a tabular result file and a graph file for each GO type (M
 
 .. class:: infomark
 
-The graph is colored by p-value: terms with p-value above cut-off appear in white; and the color gets darker as the p-value decreases.
-In addition to the name of each GO term, it shows its frequency in the study set.
-Dashed edges indicate that one or more intermediate terms were ommited from the graph.
+The graph is colored by p-value: terms with p-value above cut-off appear in white; and the color gets darker as the p-value decreases
+(see the scale at https://github.com/DanFaria/GOEnrichment/blob/master/Scale.png). In addition to the name of each GO term, the graph
+shows its frequency in the study set. Dashed edges indicate that one or more intermediate terms were ommited from the graph.
 
 -----
 
