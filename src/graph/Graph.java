@@ -230,26 +230,26 @@ public class Graph
 	private static String getColor(double pValue)
 	{
 		String color;
-		double order = (Math.log(cutOff)-Math.log(pValue))/Math.log(10);
-		if(order <= 0)
+		double order = -Math.log(pValue)/Math.log(10);
+		if(pValue < cutOff)
 			color = "#FFFFFF";
-		else if(order < 1)
-			color = "#FFFFCC";
-		else if(order < 2)
-			color = "#FFFFAA";
 		else if(order < 3)
-			color = "#FFFF88";
+			color = "#FFFFCC";
 		else if(order < 4)
-			color = "#FFFF66";
+			color = "#FFFFAA";
 		else if(order < 5)
-			color = "#FFFF00";
+			color = "#FFFF88";
 		else if(order < 6)
-			color = "#FFEE00";
+			color = "#FFFF66";
 		else if(order < 7)
-			color = "#FFCC00";
+			color = "#FFFF00";
 		else if(order < 8)
-			color = "#FFAA00";
+			color = "#FFEE00";
 		else if(order < 9)
+			color = "#FFCC00";
+		else if(order < 10)
+			color = "#FFAA00";
+		else if(order < 11)
 			color = "#FF8800";
 		else
 			color = "#FF6600";
