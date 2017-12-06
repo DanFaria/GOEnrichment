@@ -35,11 +35,11 @@ To run the [GOEnrichment.jar](https://github.com/DanFaria/GOEnrichment/releases/
 
 The options are:
 
-"-g,--go FILE_PATH"				Path to the Gene Ontology OBO or OWL file [Mandatory]
+"-g,--go FILE_PATH" =========> Path to the Gene Ontology OBO or OWL file [Mandatory]
 
-"-a,--annotation FILE_PATH"	Path to the tabular annotation file in GAF, BLAST2GO or 2-column table format [Mandatory]
+"-a,--annotation FILE_PATH" => Path to the tabular annotation file in GAF, BLAST2GO or 2-column table format [Mandatory]
 
-"-s,--study FILE_PATH"			Path to the file listing the study set gene products [Mandatory]
+"-s,--study FILE_PATH" ======> Path to the file listing the study set gene products [Mandatory]
 
 "-p,--population FILE_PATH"	Path to the file listing the population set gene products [Optional] (Default: all the genes in the annotation file)
 
