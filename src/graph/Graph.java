@@ -168,7 +168,7 @@ public class Graph
 			nodes.put(term, go.getLocalName(term));
 		else
 		{
-			String label = formatLabel(term) + "\n(" + NumberFormatter.formatPercent(fraction) + ")";
+			String label = formatLabel(go.getLabel(term)) + "\n(" + NumberFormatter.formatPercent(fraction) + ")";
 			mxCell node = (mxCell) graph.insertVertex(parent, ""+term, label, 0.0, 0.0, 0.0, 0.0, "strokeColor=#000000;fillColor="+color);
 			mxRectangle rect = graph.getPreferredSizeForCell(node);
 			rect.setHeight(rect.getHeight()+4.0);
@@ -181,7 +181,7 @@ public class Graph
 	private static void addEdge(int descendant, int ancestor)
 	{
 		int relId = go.getRelationship(descendant, ancestor).getProperty();
-		String label = go.getPropertyName(relId);
+		String label = formatLabel(go.getPropertyName(relId));
 		if(gf.equals(GraphFormat.TXT))
 		{
 			edges.add(nodes.get(descendant) + "\t" + label + "\t" +
@@ -205,17 +205,17 @@ public class Graph
 		}
 	}
 	
-	private static String formatLabel(int term)
+	private static String formatLabel(String s)
 	{
 		//Get and format the label
-		String[] words = go.getLabel(term).split("[ -]");
+		String[] words = s.split("[ -]");
 		int limit = 15;
 		for(String w : words)
 			limit = Math.max(limit, w.length());
 		String label = words[0];
 		for(int i = 1; i < words.length; i++)
 		{
-			if(go.getLabel(term).charAt(label.length()) == '-')
+			if(s.charAt(label.length()) == '-')
 				label += "-";
 			String lastWord = label.substring(label.lastIndexOf("\n")+1);
 			if(!lastWord.matches("[0-9]{1}\\-") && !words[i].matches("[0-9]{1}") && !words[i].matches("I{1,3}|IV|V") && lastWord.length() + words[i].length() > limit)
@@ -230,8 +230,8 @@ public class Graph
 	private static String getColor(double pValue)
 	{
 		String color;
-		double order = -Math.log(pValue)/Math.log(10);
-		if(pValue < cutOff)
+		double order = -Math.log10(pValue);
+		if(pValue > cutOff)
 			color = "#FFFFFF";
 		else if(order < 3)
 			color = "#FFFFCC";
