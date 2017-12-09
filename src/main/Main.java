@@ -209,11 +209,5 @@ public class Main
 			System.err.println("Error: you must specify an input study-set file.");
 			exitError();
 		}
-		if(co == null)
-		{
-			System.err.println("Error: unrecognized multiple test correction option.");
-			exitError();
-		}		
 	}
-
 }
