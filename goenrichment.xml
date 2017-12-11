@@ -1,16 +1,9 @@
 <tool id="goenrichment" name="GOEnrichment" version="2.0.0">
 	<description>performs GO enrichment analysis of a set of gene products</description>
-<<<<<<< HEAD
     <stdio>
         <exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
     </stdio>
     <command interpreter="java -jar">GOEnrichment.jar 
-=======
-	<stdio>
-		<exit_code range="1:"  level="fatal"   description="Fatal ERROR exit code greater than 1" />
-	</stdio>
-	<command interpreter="java -jar">GOEnrichment.jar 
->>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 --go $go
 --annotation $annotation
 --study $study
@@ -76,22 +69,12 @@
 		<data name="bp_graph" format="png" label="BP Graph File">
 			<change_format>
 				<when input="graph" value="svg" format="svg"/>
-<<<<<<< HEAD
-=======
-			</change_format>
-			<change_format>
->>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 				<when input="graph" value="txt" format="txt"/>
 			</change_format>
 		</data>
 		<data name="cc_graph" format="png" label="CC Graph File">
 			<change_format>
 				<when input="graph" value="svg" format="svg"/>
-<<<<<<< HEAD
-=======
-			</change_format>
-			<change_format>
->>>>>>> 61dc69e07ee8d4a4eed971efdaf3db760f1849ef
 				<when input="graph" value="txt" format="txt"/>
 			</change_format>
 		</data>
