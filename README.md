@@ -29,7 +29,7 @@
 
 <b>Command Line Usage</b>
 
-To run the [GOEnrichment.jar](https://github.com/DanFaria/GOEnrichment/releases/download/v2.0/GOEnrichment.jar) file from the command line, you need to have Java installed in your computer. You can run it by typing:
+To run the [GOEnrichment.jar](https://github.com/DanFaria/GOEnrichment/releases/download/v2.0.1/GOEnrichment.jar) file from the command line, you need to have Java installed in your computer. You can run it by typing:
 
 "java -jar GOEnrichment.jar [OPTIONS]"
 
