@@ -46,7 +46,7 @@ public enum GOType
 		else if(s.length() == 18)
 		{
 			for(GOType t : GOType.values())
-				if(s.equals(t.code))
+				if(s.equals(t.label))
 					return t;			
 		}
 		return null;
