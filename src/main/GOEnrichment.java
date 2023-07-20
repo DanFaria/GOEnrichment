@@ -392,4 +392,26 @@ public class GOEnrichment
 	{
 		return useAllRelations;
 	}
+
+	public void setStudySet(HashSet<String> ss)
+	{
+		studySet = new HashSet<String>();
+		String notFound = "";
+		int count = 0;
+		for(String s : ss)
+		{	
+			if(as.contains(s))
+				studySet.add(s);
+			else
+			{
+				notFound += s + ",";
+				count++;
+				if(count%15==0)
+					notFound += "\n";
+			}
+		}
+		if(notFound.length() > 0)
+			System.out.println("Warning: the following gene products were not listed in the " +
+				"annotation file and were ignored:\n" + notFound.substring(0, notFound.length()-1));
+	}
 }
